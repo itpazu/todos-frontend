@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Paper, Grid } from '@mui/material';
+import { Paper, Grid, Box, Typography } from '@mui/material';
 import { Todo as TodoProp } from '../context/globalContext';
 import TodoList from './TodoList';
+import SubmitChanges from './SubmitChanges';
+
 
 export default function Todos({ fetchtedTodos, fetchedCompleted }: {
     fetchtedTodos: TodoProp[],
@@ -61,12 +63,22 @@ export default function Todos({ fetchtedTodos, fetchedCompleted }: {
         e.dataTransfer.dropEffect = "move"
     }
     return (
-        <>
+        < >
+
+
+            <SubmitChanges changes={filterChanges} />
+            <Grid item justifyContent={'center'}
+                md={7}
+                xs={12}>
+                hello
+            </Grid>
+
 
             <Grid
-                justifyContent="center"
-                item md={3}
+                item
+                md={3}
                 xs={12}
+                sx={{ minHeight: { xs: '40vh', md: '80vh' } }}
                 onDrop={(e) => {
                     if (e.dataTransfer.getData("completed") === "true") return
                     let idx = parseInt(e.dataTransfer.getData("text"))
@@ -80,6 +92,10 @@ export default function Todos({ fetchtedTodos, fetchedCompleted }: {
                 </Paper>
             </Grid>
             <Grid
+                item
+                md={7}
+                xs={12}
+                sx={{ minHeight: { xs: '40vh', md: '80vh' } }}
                 onDrop={(e) => {
                     //this line is necessary as Grid is a drop target, we want to avoid triggering the drop function when reordering inside the group
                     if (e.dataTransfer.getData("completed") === "false") return
@@ -88,11 +104,12 @@ export default function Todos({ fetchtedTodos, fetchedCompleted }: {
                 }
                 }
                 onDragOver={dragStartHandler}
-                justifyContent="center" item md={7} xs={12} >
+                justifyContent="center" >
                 <Paper id="source" sx={{ height: '100%', padding: 2 }} >
                     <TodoList todos={todos} setTodos={setTodos} setcompletedTodos={setcompletedTodos} />
                 </Paper>
             </Grid>
+
         </>
 
 
