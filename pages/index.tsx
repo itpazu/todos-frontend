@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Paper, Grid } from '@mui/material';
 import Todos from '../src/components/Todos';
+import { useGlobalContext } from '../src/context/globalContext';
 
 const MOCK = [
   {
@@ -64,6 +65,8 @@ const MOCK2 = [
 export default function TodoMain() {
   const [todos, setTodos] = useState(MOCK)
   const [completedTodos, setcompletedTodos] = useState(MOCK2)
+  const { state, dispatch } = useGlobalContext()
+  console.log(state)
 
   return (
     <Todos fetchtedTodos={todos} fetchedCompleted={completedTodos} />

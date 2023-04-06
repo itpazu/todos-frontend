@@ -13,7 +13,43 @@ export default function Todos({ fetchtedTodos, fetchedCompleted }: {
     const [todos, setTodos] = useState(fetchtedTodos)
     const [completedTodos, setcompletedTodos] = useState(fetchedCompleted)
 
+    const completedTodosDropHandler = (e: React.DragEvent<HTMLElement>) => {
+        if (e.dataTransfer.getData("completed") === "true") return
+        let idx = parseInt(e.dataTransfer.getData("text"))
 
+        let completedItem = todos[idx];
+        completedItem.completed = true
+        setTodos(prev => {
+            let localTodos = [...prev]
+            localTodos.splice(idx, 1)
+            return localTodos
+        })
+
+        setcompletedTodos(prev => {
+            let localCompleted = [...prev]
+            localCompleted.splice(0, 0, completedItem)
+            return localCompleted
+        })
+    }
+
+    const pendingTodosDropHandler = (e: React.DragEvent<HTMLElement>) => {
+        if (e.dataTransfer.getData("completed") === "false") return
+        let idx = parseInt(e.dataTransfer.getData("text"))
+        let completedItem = completedTodos[idx];
+        completedItem.completed = false
+        setcompletedTodos(prev => {
+            let localTodos = [...prev]
+            localTodos.splice(idx, 1)
+            return localTodos
+        })
+
+        setTodos(prev => {
+            let localCompleted = [...prev]
+            localCompleted.splice(0, 0, completedItem)
+            return localCompleted
+        })
+
+    }
     return (
         <>
 
@@ -21,30 +57,7 @@ export default function Todos({ fetchtedTodos, fetchedCompleted }: {
                 justifyContent="center"
                 item md={3}
                 xs={12}
-                onDrop={(e) => {
-                    if (e.dataTransfer.getData("completed") === "true") return
-                    let idx = parseInt(e.dataTransfer.getData("text"))
-                    console.log(idx)
-                    console.log(e.dataTransfer.getData("completed"))
-
-                    let completedItem = todos[idx];
-                    completedItem.completed = true
-                    setTodos(prev => {
-                        let localTodos = [...prev]
-                        localTodos.splice(idx, 1)
-                        return localTodos
-                    })
-
-                    setcompletedTodos(prev => {
-                        let localCompleted = [...prev]
-                        localCompleted.splice(0, 0, completedItem)
-                        return localCompleted
-                    })
-
-
-
-                    // console.log(!!data)
-                }}
+                onDrop={completedTodosDropHandler}
                 onDragOver={(e) => {
                     e.preventDefault()
                     e.dataTransfer.dropEffect = "move"
@@ -58,24 +71,7 @@ export default function Todos({ fetchtedTodos, fetchedCompleted }: {
                 </Paper>
             </Grid>
             <Grid
-                onDrop={(e) => {
-                    if (e.dataTransfer.getData("completed") === "false") return
-                    let idx = parseInt(e.dataTransfer.getData("text"))
-                    let completedItem = completedTodos[idx];
-                    completedItem.completed = false
-                    setcompletedTodos(prev => {
-                        let localTodos = [...prev]
-                        localTodos.splice(idx, 1)
-                        return localTodos
-                    })
-
-                    setTodos(prev => {
-                        let localCompleted = [...prev]
-                        localCompleted.splice(0, 0, completedItem)
-                        return localCompleted
-                    })
-
-                }}
+                onDrop={pendingTodosDropHandler}
                 onDragOver={(e) => {
                     e.preventDefault()
                     e.dataTransfer.dropEffect = "move"

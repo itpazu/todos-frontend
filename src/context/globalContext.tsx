@@ -44,10 +44,13 @@ export const GlobalContext = createContext<{ state: State, dispatch: React.Dispa
 });
 
 
-export const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
-    const [state, dispatch] = useReducer(globalReducer, initialState);
+export const GlobalContextProvider = ({ children, fetchedResults }: {
+    children: ReactNode,
+    fetchedResults: State
+}) => {
+    const [state, dispatch] = useReducer(globalReducer, fetchedResults);
     return (
-        <GlobalContext.Provider value={{ state: { ...state }, dispatch }}>
+        <GlobalContext.Provider value={{ state: state, dispatch }}>
             {children}
         </GlobalContext.Provider>
     );
