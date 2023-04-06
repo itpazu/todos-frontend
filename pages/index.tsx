@@ -35,7 +35,7 @@ const MOCK = [
 
 const MOCK2 = [
   {
-    "id": 1,
+    "id": 4,
     "title": "I am a completed item",
     "description": "first item to add",
     "created_at": "2023-04-04T23:14:02.830843+03:00",
@@ -44,7 +44,7 @@ const MOCK2 = [
     "updated_at": "2023-04-04T23:14:02.830903+03:00"
   },
   {
-    "id": 2,
+    "id": 5,
     "title": "me too",
     "description": "goodby",
     "created_at": "2023-04-04T23:29:41.152817+03:00",
@@ -53,7 +53,7 @@ const MOCK2 = [
     "updated_at": "2023-04-04T23:29:41.152843+03:00"
   },
   {
-    "id": 3,
+    "id": 6,
     "title": "well im completed number 3",
     "description": "last todo",
     "created_at": "2023-04-04T23:36:19.550944+03:00",
