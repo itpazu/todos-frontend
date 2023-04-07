@@ -2,9 +2,9 @@
 import React from "react";
 import { Button, Box } from "@mui/material";
 
-export default function SubmitChanges({ changes }: { changes: Array<[string, boolean]> }) {
+export default function SubmitChanges({ changes, isReordered }: { changes: Array<[string, boolean]>, isReordered: boolean }) {
 
-
+    console.log(changes.length === 0 && !isReordered)
     return (
         <Box
             component='form'
@@ -14,7 +14,7 @@ export default function SubmitChanges({ changes }: { changes: Array<[string, boo
             }}
 
         >
-            <Button variant="contained" disabled={(changes.length === 0)}> submit changes </Button>
+            <Button variant="contained" disabled={changes.length === 0 && !isReordered}> submit changes </Button>
         </Box>
     )
 }

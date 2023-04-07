@@ -1,6 +1,6 @@
 import React, { ReactNode, useReducer, createContext, useContext } from 'react';
 
-type Action = { type: string, payload?: DispatchPayload }
+type Action = { type: string, payload: DispatchPayload }
 
 export type Todo = {
     id: number,
@@ -9,7 +9,8 @@ export type Todo = {
     created_at: string,
     completed: boolean,
     user: string,
-    updated_at: string
+    updated_at: string,
+    order?: number
 }
 
 type DispatchPayload = {
@@ -30,7 +31,10 @@ const globalReducer = (
 ) => {
     switch (action.type) {
         case "todos":
+            return { ...state, todos: action.payload.todos }
         case "completedTodos":
+            return { ...state, completedTodos: action.payload.todos }
+        case "both":
             return { ...state, ...action.payload }
         default:
             return state;
