@@ -1,60 +1,67 @@
 import React, { useState, useMemo } from 'react';
 import { Paper, Grid, Box, Typography } from '@mui/material';
-import { Todo as TodoProp } from '../context/globalContext';
+import { Todo as TodoProp, useGlobalContext } from '../context/globalContext';
 import TodoList from './TodoList';
+import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
 
 
-export default function Todos({ fetchtedTodos, fetchedCompleted }: {
-    fetchtedTodos: TodoProp[],
-    fetchedCompleted: TodoProp[]
+export default function Todos() {
+    const { dispatch, state: { todos, completedTodos } } = useGlobalContext()
 
-}) {
-
-    const [todos, setTodos] = useState(fetchtedTodos)
-    const [completedTodos, setcompletedTodos] = useState(fetchedCompleted)
     const [changes, setChanges] = useState<{ [index: number]: boolean }>({})
 
     // cache of the original state - completed / pending per todo in the database
     const originalState = useMemo(() => {
-        return [...fetchtedTodos, ...fetchedCompleted].reduce<{ [index: number]: boolean }>((prev, current) => {
+        return [...todos, ...completedTodos].reduce<{ [index: number]: boolean }>((prev, current) => {
             return { ...prev, [current.id]: current.completed }
         }, {})
     }, [])
 
     // holds the value of the actual changed todos (from false to true and vice versa)
-    const filterChanges = useMemo(() => {
+    const filterChanges = useMemo<[string, boolean][]>(() => {
         let entries = Object.entries(changes)
         let newEntries = entries.filter(([id, isCompleted]) => !(isCompleted === originalState[parseInt(id)]))
         return newEntries
     }, [changes])
 
-
-    // handler for droping completed todo onto  pending and vice versa
     const todosDropHandler = (
-        idx: number,
-        movefromTodos: TodoProp[],
-        removeFunction: React.Dispatch<React.SetStateAction<TodoProp[]>>,
-        addToFunction: React.Dispatch<React.SetStateAction<TodoProp[]>>
-
+        e: React.DragEvent<HTMLElement>
     ) => {
+        //this line is necessary as Grid is a drop target, we want to avoid 
+        //triggering the drop function when reordering inside the group
+        if (e.dataTransfer.getData("completed") === "false") return
+        let idx = parseInt(e.dataTransfer.getData("text"))
+        completedTodos[idx].completed = false
 
-        movefromTodos[idx].completed = !movefromTodos[idx].completed
-
-        const { completed, id } = movefromTodos[idx];
+        const { completed, id } = completedTodos[idx];
         setChanges(prev => { return { ...prev, [id]: completed } })
+        let completedTodosCopy = [...completedTodos]
+        completedTodosCopy.splice(idx, 1)
 
-        removeFunction(prev => {
-            let localTodos = [...prev]
-            localTodos.splice(idx, 1)
-            return localTodos
-        })
+        let todosCopy = [...todos]
+        todosCopy.splice(0, 0, completedTodos[idx])
 
-        addToFunction(prev => {
-            let localCompleted = [...prev]
-            localCompleted.splice(0, 0, movefromTodos[idx])
-            return localCompleted
-        })
+        dispatch({ type: "todos", payload: { todos: todosCopy, completedTodos: completedTodosCopy } })
+
+    }
+    const completedTodosDropHandler = (
+        e: React.DragEvent<HTMLElement>
+    ) => {
+        if (e.dataTransfer.getData("completed") === "true") return
+        let idx = parseInt(e.dataTransfer.getData("text"))
+
+        todos[idx].completed = true
+
+        const { completed, id } = todos[idx];
+        setChanges(prev => { return { ...prev, [id]: completed } })
+        let todosCopy = [...todos]
+        todosCopy.splice(idx, 1)
+
+        let completedTodosCopy = [...completedTodos]
+        completedTodosCopy.splice(0, 0, todos[idx])
+
+        dispatch({ type: "todos", payload: { todos: todosCopy, completedTodos: completedTodosCopy } })
 
     }
 
@@ -62,15 +69,22 @@ export default function Todos({ fetchtedTodos, fetchedCompleted }: {
         e.preventDefault()
         e.dataTransfer.dropEffect = "move"
     }
+
     return (
         < >
 
+            <Grid
+                item
+                md={3}
+                xs={12}
+            >
 
-            <SubmitChanges changes={filterChanges} />
+                <SubmitChanges changes={filterChanges} />
+            </Grid>
             <Grid item justifyContent={'center'}
                 md={7}
                 xs={12}>
-                hello
+                <AddToDo />
             </Grid>
 
 
@@ -78,16 +92,12 @@ export default function Todos({ fetchtedTodos, fetchedCompleted }: {
                 item
                 md={3}
                 xs={12}
-                sx={{ minHeight: { xs: '40vh', md: '80vh' } }}
-                onDrop={(e) => {
-                    if (e.dataTransfer.getData("completed") === "true") return
-                    let idx = parseInt(e.dataTransfer.getData("text"))
-                    todosDropHandler(idx, todos, setTodos, setcompletedTodos)
-                }}
+                sx={{ minHeight: { xs: '40vh', md: '70vh' } }}
+                onDrop={completedTodosDropHandler}
                 onDragOver={dragStartHandler}
             >
                 <Paper sx={{ height: '100%', padding: 2 }}>
-                    <TodoList todos={completedTodos} setTodos={setcompletedTodos} setcompletedTodos={setcompletedTodos} />
+                    <TodoList todos={completedTodos} />
 
                 </Paper>
             </Grid>
@@ -95,18 +105,12 @@ export default function Todos({ fetchtedTodos, fetchedCompleted }: {
                 item
                 md={7}
                 xs={12}
-                sx={{ minHeight: { xs: '40vh', md: '80vh' } }}
-                onDrop={(e) => {
-                    //this line is necessary as Grid is a drop target, we want to avoid triggering the drop function when reordering inside the group
-                    if (e.dataTransfer.getData("completed") === "false") return
-                    let idx = parseInt(e.dataTransfer.getData("text"))
-                    todosDropHandler(idx, completedTodos, setcompletedTodos, setTodos)
-                }
-                }
+                sx={{ minHeight: { xs: '40vh', md: '70vh' } }}
+                onDrop={todosDropHandler}
                 onDragOver={dragStartHandler}
                 justifyContent="center" >
                 <Paper id="source" sx={{ height: '100%', padding: 2 }} >
-                    <TodoList todos={todos} setTodos={setTodos} setcompletedTodos={setcompletedTodos} />
+                    <TodoList todos={todos} />
                 </Paper>
             </Grid>
 

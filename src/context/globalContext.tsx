@@ -16,7 +16,7 @@ type DispatchPayload = {
     [key: string]: Todo[]
 }
 
-type State = {
+export type State = {
     completedTodos: Todo[],
     todos: Todo[],
 };
@@ -44,13 +44,13 @@ export const GlobalContext = createContext<{ state: State, dispatch: React.Dispa
 });
 
 
-export const GlobalContextProvider = ({ children, fetchedResults }: {
+export const GlobalContextProvider = ({ children, FetchState }: {
     children: ReactNode,
-    fetchedResults: State
+    FetchState: State
 }) => {
-    const [state, dispatch] = useReducer(globalReducer, fetchedResults);
+    const [state, dispatch] = useReducer(globalReducer, FetchState);
     return (
-        <GlobalContext.Provider value={{ state: state, dispatch }}>
+        <GlobalContext.Provider value={{ state, dispatch }}>
             {children}
         </GlobalContext.Provider>
     );

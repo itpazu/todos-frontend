@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Paper, Grid } from '@mui/material';
 import Todos from '../src/components/Todos';
-import { useGlobalContext } from '../src/context/globalContext';
+import { GlobalContextProvider, State as FetchStateProp } from '../src/context/globalContext';
+import { NextPage, GetStaticProps, InferGetStaticPropsType } from 'next';
+import useSWR from 'swr';
 
 const MOCK = [
   {
@@ -62,14 +65,45 @@ const MOCK2 = [
     "updated_at": "2023-04-04T23:36:19.550983+03:00"
   }
 ]
-export default function TodoMain() {
-  const [todos, setTodos] = useState(MOCK)
-  const [completedTodos, setcompletedTodos] = useState(MOCK2)
-  const { state, dispatch } = useGlobalContext()
-  console.log(state)
+//  const fetcher = (url: string) => fetch(url).then(res=>res.json)
+export const getStaticProps: GetStaticProps<{ [index: string]: typeof MOCK }> = async (context) => {
+  // const headers = new Headers()
+  // headers.set('Authorization', 'Basic ' + Buffer.from("itpazu" + ":" + "morenito").toString('base64'));
+  // console.log(process.env)
+  // const data = await fetch('https://drag-n-drop-sandy.vercel.app/todos', { headers })
+  // const RES = await data.json()
+
+  // console.log('RES,', data.status);
+
+  return {
+    props: {
+      todos: MOCK, completedTodos: MOCK2
+    },
+    revalidate: 60,
+  };
+};
+export default function TodoMain({ todos, completedTodos }: FetchStateProp) {
+  // fetch('/api/todos')
+  //   .then((res) => res.json())
+  //   .then((data) => console.log(data))
+
+
+  // const [todos, setTodos] = useState(MOCK)
+  // const [completedTodos, setcompletedTodos] = useState(MOCK2)
+  // const { state, dispatch } = useGlobalContext()
+  // const { dispatch } = useGlobalContext()
+
+  // useEffect(() => {
+  //   dispatch({ type: "todos", payload: { todos, completedTodos } })
+  //   console.log('remounted')
+  // }, [])
 
   return (
-    <Todos fetchtedTodos={todos} fetchedCompleted={completedTodos} />
+    <GlobalContextProvider FetchState={{ todos, completedTodos }}>
+
+      <Todos />
+    </GlobalContextProvider>
+
 
   );
 }

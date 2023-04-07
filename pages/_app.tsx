@@ -32,6 +32,7 @@ export default function MyApp(props: MyAppProps) {
       </Head>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+
         <Layout>
           <Component {...pageProps} />
 
