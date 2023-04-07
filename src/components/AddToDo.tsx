@@ -5,6 +5,8 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
 import { Todo } from '../context/globalContext';
+import axios from 'axios';
+import { useGlobalContext } from '../context/globalContext';
 
 const HELPER_TEXT: { [key: string]: string } = {
     title: 'at least 2 character long, must contain character/numbers',
@@ -12,11 +14,25 @@ const HELPER_TEXT: { [key: string]: string } = {
 
 }
 
+const newTodoModel: Todo = {
+    title: "",
+    description: "",
+    id: 1,
+    completed: false
+}
 export default function AddToDo() {
-    const [newTodo, setNewTodo] = useState<Partial<Todo>>({
-        title: "",
-        description: ""
-    })
+    const { dispatch } = useGlobalContext()
+    const [newTodo, setNewTodo] = useState<Todo>(newTodoModel)
+
+    const submitNewTodo = async () => {
+        // error handling
+        // const response = await axios.post('/api/todos/addToDo', { title: "FDS", description: "nllll" })
+        // console.log(response)
+        dispatch({ type: "newTodo", payload: { newItem: [newTodo], newTodos: [newTodo] } })
+        setNewTodo(prev => ({ ...newTodoModel, id: --prev.id }))
+
+
+    }
 
     const validate = (type: string, input: string) => {
         switch (type) {
@@ -33,7 +49,8 @@ export default function AddToDo() {
 
         }
     }
-    const insertTitle: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+
+    const inputTitle: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const { currentTarget: { name, value } } = e;
         setNewTodo(prev => ({
             ...prev,
@@ -53,7 +70,7 @@ export default function AddToDo() {
         >
             <Stack direction='row' spacing={1}>
                 <TextField
-                    onChange={insertTitle}
+                    onChange={inputTitle}
                     name="title"
                     value={newTodo.title}
                     error={isValid ? false : true}
@@ -61,8 +78,13 @@ export default function AddToDo() {
                     placeholder="What else would you like to do?"
                     helperText={isValid ? "" : HELPER_TEXT["title"]}
                 />
-                <Fab color="primary" aria-label="add" disabled={!isValid ||
-                    (newTodo.title as string).length === 0}>
+                <Fab
+                    color="primary"
+                    aria-label="add"
+                    disabled={!isValid ||
+                        (newTodo.title as string).length === 0}
+                    onClick={submitNewTodo}
+                >
                     <AddIcon />
                 </Fab>
             </Stack>
