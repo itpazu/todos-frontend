@@ -6,10 +6,10 @@ export type Todo = {
     id: number,
     title: string,
     description: string,
-    created_at: string,
+    created_at?: string,
     completed: boolean,
-    user: string,
-    updated_at: string,
+    user?: string,
+    updated_at?: string,
     order?: number
 }
 
@@ -20,10 +20,12 @@ type DispatchPayload = {
 export type State = {
     completedTodos: Todo[],
     todos: Todo[],
+    newTodos: Todo[]
 };
 const initialState = {
     completedTodos: [],
     todos: [],
+    newTodos: []
 }
 const globalReducer = (
     state: State = initialState,
@@ -36,6 +38,11 @@ const globalReducer = (
             return { ...state, completedTodos: action.payload.todos }
         case "both":
             return { ...state, ...action.payload }
+        case "newTodo":
+            return {
+                ...state, todos: [...action.payload.newItem,
+                ...state.todos], newTodos: [...state.newTodos, ...action.payload.newTodos]
+            }
         default:
             return state;
     }
@@ -50,9 +57,9 @@ export const GlobalContext = createContext<{ state: State, dispatch: React.Dispa
 
 export const GlobalContextProvider = ({ children, FetchState }: {
     children: ReactNode,
-    FetchState: State
+    FetchState: Partial<State>
 }) => {
-    const [state, dispatch] = useReducer(globalReducer, FetchState);
+    const [state, dispatch] = useReducer(globalReducer, { ...initialState, ...FetchState });
     return (
         <GlobalContext.Provider value={{ state, dispatch }}>
             {children}

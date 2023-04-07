@@ -43,11 +43,11 @@ export default function TodoList({ todos }: {
     return (
 
         <>
-            {todos.map(({ title, description, completed }, idx) => {
+            {todos.map(({ title, description, completed, id }, idx) => {
                 return (
                     <Accordion
                         id="this"
-                        key={`${title}`}
+                        key={`${title + id}`}
                         draggable
                         onDragStart={(e) => dragStartHandler(e, idx, completed)}
                         onDragEnter={() => draggedOver.current = idx}

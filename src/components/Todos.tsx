@@ -1,14 +1,14 @@
-import React, { useState, useMemo } from 'react';
-import { Paper, Grid, Box, Typography } from '@mui/material';
-import { Todo as TodoProp, useGlobalContext } from '../context/globalContext';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Paper, Grid, } from '@mui/material';
+import { useGlobalContext } from '../context/globalContext';
 import TodoList from './TodoList';
 import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
-
+import { Todo, State } from '../context/globalContext'
 
 export default function Todos() {
     const { dispatch, state: { todos, completedTodos } } = useGlobalContext()
-
+    console.log(useGlobalContext())
     const [changes, setChanges] = useState<{ [index: number]: boolean }>({})
 
     // cache of the original state - completed / pending per todo in the database
@@ -17,11 +17,13 @@ export default function Todos() {
             return { ...prev, [current.id]: current.completed }
         }, {})
     }, [])
-    // cache the original order
+    // cache the original order of todos
     const originaOrder = useMemo(() => todos.map(({ id }) => id)
 
         , [])
 
+    // evaluates the difference between original order of todos and the current order
+    // returns a boolean to enable submit button if todos order changed
     const isTodosReordered = () => {
         return originaOrder.some((val, idx) => !(val === todos[idx].id))
     }
@@ -32,7 +34,7 @@ export default function Todos() {
         let newEntries = entries.filter(([id, isCompleted]) => !(isCompleted === originalState[parseInt(id)]))
         return newEntries
     }, [changes])
-
+    console.log(filterChanges)
     const todosDropHandler = (
         e: React.DragEvent<HTMLElement>
     ) => {
