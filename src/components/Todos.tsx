@@ -17,6 +17,14 @@ export default function Todos() {
             return { ...prev, [current.id]: current.completed }
         }, {})
     }, [])
+    // cache the original order
+    const originaOrder = useMemo(() => todos.map(({ id }) => id)
+
+        , [])
+
+    const isTodosReordered = () => {
+        return originaOrder.some((val, idx) => !(val === todos[idx].id))
+    }
 
     // holds the value of the actual changed todos (from false to true and vice versa)
     const filterChanges = useMemo<[string, boolean][]>(() => {
@@ -42,7 +50,7 @@ export default function Todos() {
         let todosCopy = [...todos]
         todosCopy.splice(0, 0, completedTodos[idx])
 
-        dispatch({ type: "todos", payload: { todos: todosCopy, completedTodos: completedTodosCopy } })
+        dispatch({ type: "both", payload: { todos: todosCopy, completedTodos: completedTodosCopy } })
 
     }
     const completedTodosDropHandler = (
@@ -61,7 +69,7 @@ export default function Todos() {
         let completedTodosCopy = [...completedTodos]
         completedTodosCopy.splice(0, 0, todos[idx])
 
-        dispatch({ type: "todos", payload: { todos: todosCopy, completedTodos: completedTodosCopy } })
+        dispatch({ type: "both", payload: { todos: todosCopy, completedTodos: completedTodosCopy } })
 
     }
 
@@ -79,7 +87,7 @@ export default function Todos() {
                 xs={12}
             >
 
-                <SubmitChanges changes={filterChanges} />
+                <SubmitChanges isReordered={isTodosReordered()} changes={filterChanges} />
             </Grid>
             <Grid item justifyContent={'center'}
                 md={7}
