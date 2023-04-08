@@ -10,7 +10,7 @@ export type Todo = {
     completed: boolean,
     user?: string,
     updated_at?: string,
-    order?: number
+    order: number
 }
 
 type DispatchPayload = {
@@ -18,23 +18,26 @@ type DispatchPayload = {
 }
 export type FieldsChanges = Partial<Pick<Todo, "title" | "description">> & { id: number }
 
-export type TodosFromState = keyof Pick<State, "todos" | "completedTodos">
+export type TodosFromProps = Pick<State, "todos" | "completedTodos">
+export type TodosFromState = keyof TodosFromProps
 export type MovToDoesHandler = (moveFromArr: TodosFromState, moveToArr: TodosFromState, idx: number) => void
 
 export type State = {
     completedTodos: Todo[],
     todos: Todo[],
     newTodos: Todo[],
+    deleted: Todo[]
     statusChanges: Array<[string, boolean]>
     fieldsUpdates: Array<FieldsChanges>
 };
 
-const initialState = {
+export const initialState = {
     completedTodos: [],
     todos: [],
     newTodos: [],
     statusChanges: [],
-    fieldsUpdates: []
+    fieldsUpdates: [],
+    deleted: []
 }
 const globalReducer = (
     state: State = initialState,
@@ -48,7 +51,6 @@ const globalReducer = (
         case "completedTodos":
             return { ...state, completedTodos: payload.todos }
         case "both":
-            return { ...state, ...payload }
         case "statusChanges":
             return { ...state, ...payload }
         case "newTodo":
@@ -56,6 +58,10 @@ const globalReducer = (
                 ...state, todos: [...payload.newItem,
                 ...state.todos], newTodos: [...state.newTodos, ...payload.newTodos]
             }
+        case "discardLocalChanges":
+            return { ...initialState, ...payload }
+        case "deleteTodo":
+            return { ...state, ...payload, deleted: [...state.deleted, ...payload.deleted] }
         default:
             return state;
     }

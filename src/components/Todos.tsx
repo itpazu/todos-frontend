@@ -1,20 +1,18 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Paper, Grid, } from '@mui/material';
-import { useGlobalContext, TodosFromState, MovToDoesHandler } from '../context/globalContext';
+import { Paper, Grid } from '@mui/material';
+import { useGlobalContext, MovToDoesHandler, TodosFromProps } from '../context/globalContext';
 import TodoList from './TodoList';
 import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
 
-// implment edition
-// implement delete
-//implement submit all changes
-// implement discard changes
-
-export default function Todos() {
+//implement submit all changes - note that new items may be in more then one place
+// present local changes on screen
+//login 
+export default function Todos({ originalTodos }: { originalTodos: TodosFromProps }) {
     const { dispatch, state } = useGlobalContext()
-    const { todos, completedTodos, statusChanges } = state;
+    const { todos, completedTodos } = state;
     const [changes, setChanges] = useState<{ [index: number]: boolean }>({})
-
+    console.log(state)
     // cache of the original state - completed / pending per todo in the database
     const originalState = useMemo(() => {
         return [...todos, ...completedTodos].reduce<{ [index: number]: boolean }>((prev, current) => {
@@ -27,6 +25,7 @@ export default function Todos() {
     // evaluates the difference between original order of todos and the current order
     // returns a boolean to enable submit button if todos order changed
     const isTodosReordered = () => {
+        if (originaOrder.length < 2) return true
         return originaOrder.some((val, idx) => !(val === todos[idx].id))
     }
 
@@ -38,7 +37,7 @@ export default function Todos() {
     }, [changes])
 
     const moveTodoHandler: MovToDoesHandler = (moveFromArr, moveToArr, idx) => {
-        const constTodoToEdit = state[moveFromArr][idx]
+        const constTodoToEdit = { ...state[moveFromArr][idx] }
         constTodoToEdit.completed = !constTodoToEdit.completed
 
         const { completed, id } = constTodoToEdit;
@@ -61,7 +60,6 @@ export default function Todos() {
         let idx = parseInt(e.dataTransfer.getData("text"))
         moveTodoHandler("completedTodos", "todos", idx)
 
-
     }
 
     const completedTodosDropHandler = (
@@ -80,14 +78,17 @@ export default function Todos() {
 
     return (
         < >
-
             <Grid
                 item
                 md={3}
                 xs={12}
+                padding={3}
             >
+                <SubmitChanges
+                    originalTodos={originalTodos}
+                    isReordered={isTodosReordered()}
 
-                <SubmitChanges isReordered={isTodosReordered()} changes={statusChanges} />
+                />
             </Grid>
             <Grid item justifyContent={'center'}
                 md={7}
@@ -95,23 +96,23 @@ export default function Todos() {
                 <AddToDo />
             </Grid>
 
+            {completedTodos.length > 0 &&
+                <Grid
+                    item
+                    md={3}
+                    xs={12}
+                    sx={{ minHeight: { xs: '40vh', md: '70vh' } }}
+                    onDrop={completedTodosDropHandler}
+                    onDragOver={dragStartHandler}
+                >
+                    <Paper sx={{ height: '100%', padding: 2 }}>
+                        <TodoList todos={completedTodos} moveToDoes={moveTodoHandler} />
 
+                    </Paper>
+                </Grid>}
             <Grid
                 item
-                md={3}
-                xs={12}
-                sx={{ minHeight: { xs: '40vh', md: '70vh' } }}
-                onDrop={completedTodosDropHandler}
-                onDragOver={dragStartHandler}
-            >
-                <Paper sx={{ height: '100%', padding: 2 }}>
-                    <TodoList todos={completedTodos} moveToDoes={moveTodoHandler} />
-
-                </Paper>
-            </Grid>
-            <Grid
-                item
-                md={7}
+                md={completedTodos.length > 0 ? 7 : 10}
                 xs={12}
                 sx={{ minHeight: { xs: '40vh', md: '70vh' } }}
                 onDrop={todosDropHandler}
