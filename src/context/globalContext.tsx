@@ -16,8 +16,11 @@ export type Todo = {
 type DispatchPayload = {
     [key: string]: Todo[] | any
 }
-
 export type FieldsChanges = Partial<Pick<Todo, "title" | "description">> & { id: number }
+
+export type TodosFromState = keyof Pick<State, "todos" | "completedTodos">
+export type MovToDoesHandler = (moveFromArr: TodosFromState, moveToArr: TodosFromState, idx: number) => void
+
 export type State = {
     completedTodos: Todo[],
     todos: Todo[],
@@ -25,6 +28,7 @@ export type State = {
     statusChanges: Array<[string, boolean]>
     fieldsUpdates: Array<FieldsChanges>
 };
+
 const initialState = {
     completedTodos: [],
     todos: [],

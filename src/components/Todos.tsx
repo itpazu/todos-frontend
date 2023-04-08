@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Paper, Grid, } from '@mui/material';
-import { useGlobalContext } from '../context/globalContext';
+import { useGlobalContext, TodosFromState, MovToDoesHandler } from '../context/globalContext';
 import TodoList from './TodoList';
 import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
@@ -9,8 +9,10 @@ import SubmitChanges from './SubmitChanges';
 // implement delete
 //implement submit all changes
 // implement discard changes
+
 export default function Todos() {
-    const { dispatch, state: { todos, completedTodos, statusChanges } } = useGlobalContext()
+    const { dispatch, state } = useGlobalContext()
+    const { todos, completedTodos, statusChanges } = state;
     const [changes, setChanges] = useState<{ [index: number]: boolean }>({})
 
     // cache of the original state - completed / pending per todo in the database
@@ -35,6 +37,21 @@ export default function Todos() {
         dispatch({ type: "statusChanges", payload: { statusChanges: newEntries } })
     }, [changes])
 
+    const moveTodoHandler: MovToDoesHandler = (moveFromArr, moveToArr, idx) => {
+        const constTodoToEdit = state[moveFromArr][idx]
+        constTodoToEdit.completed = !constTodoToEdit.completed
+
+        const { completed, id } = constTodoToEdit;
+        setChanges(prev => ({ ...prev, [id]: completed }))
+        let moveFromArrCopy = [...state[moveFromArr]]
+        moveFromArrCopy.splice(idx, 1)
+
+        let moveToArrCopy = [...state[moveToArr]]
+        moveToArrCopy.splice(0, 0, constTodoToEdit)
+
+        return dispatch({ type: "both", payload: { [moveToArr]: moveToArrCopy, [moveFromArr]: moveFromArrCopy } })
+    }
+
     const todosDropHandler = (
         e: React.DragEvent<HTMLElement>
     ) => {
@@ -42,36 +59,17 @@ export default function Todos() {
         //triggering the drop function when reordering inside the group
         if (e.dataTransfer.getData("completed") === "false") return
         let idx = parseInt(e.dataTransfer.getData("text"))
-        completedTodos[idx].completed = false
+        moveTodoHandler("completedTodos", "todos", idx)
 
-        const { completed, id } = completedTodos[idx];
-        setChanges(prev => { return { ...prev, [id]: completed } })
-        let completedTodosCopy = [...completedTodos]
-        completedTodosCopy.splice(idx, 1)
-
-        let todosCopy = [...todos]
-        todosCopy.splice(0, 0, completedTodos[idx])
-
-        dispatch({ type: "both", payload: { todos: todosCopy, completedTodos: completedTodosCopy } })
 
     }
+
     const completedTodosDropHandler = (
         e: React.DragEvent<HTMLElement>
     ) => {
         if (e.dataTransfer.getData("completed") === "true") return
         let idx = parseInt(e.dataTransfer.getData("text"))
-
-        todos[idx].completed = true
-
-        const { completed, id } = todos[idx];
-        setChanges(prev => { return { ...prev, [id]: completed } })
-        let todosCopy = [...todos]
-        todosCopy.splice(idx, 1)
-
-        let completedTodosCopy = [...completedTodos]
-        completedTodosCopy.splice(0, 0, todos[idx])
-
-        dispatch({ type: "both", payload: { todos: todosCopy, completedTodos: completedTodosCopy } })
+        moveTodoHandler("todos", "completedTodos", idx)
 
     }
 
@@ -107,7 +105,7 @@ export default function Todos() {
                 onDragOver={dragStartHandler}
             >
                 <Paper sx={{ height: '100%', padding: 2 }}>
-                    <TodoList todos={completedTodos} />
+                    <TodoList todos={completedTodos} moveToDoes={moveTodoHandler} />
 
                 </Paper>
             </Grid>
@@ -120,7 +118,7 @@ export default function Todos() {
                 onDragOver={dragStartHandler}
                 justifyContent="center" >
                 <Paper id="source" sx={{ height: '100%', padding: 2 }} >
-                    <TodoList todos={todos} />
+                    <TodoList todos={todos} moveToDoes={moveTodoHandler} />
                 </Paper>
             </Grid>
 

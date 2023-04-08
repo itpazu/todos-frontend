@@ -4,12 +4,14 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Todo as TodoProp } from '../context/globalContext';
-import { useGlobalContext } from '../context/globalContext';
+import { Todo as TodoProp, useGlobalContext, MovToDoesHandler } from '../context/globalContext';
 import TodoDetails from './TodoDetails';
+import Checkbox from '@mui/material/Checkbox';
+import Stack from '@mui/material/Stack'
 
-export default function TodoList({ todos }: {
+export default function TodoList({ todos, moveToDoes }: {
     todos: TodoProp[],
+    moveToDoes: MovToDoesHandler
 
 }) {
 
@@ -18,7 +20,6 @@ export default function TodoList({ todos }: {
 
     const [showTitle, setShowTitle] = useState(true)
     const { state, dispatch } = useGlobalContext()
-
 
     const handleDragEnd = (completed: boolean) => {
         let todosCopy;
@@ -41,6 +42,13 @@ export default function TodoList({ todos }: {
         e.dataTransfer.setData("text/plain", JSON.stringify(idx));
         e.dataTransfer.setData("completed", JSON.stringify(completed));
         e.dataTransfer.effectAllowed = "move";
+
+    }
+
+    const handleMove = (completed: boolean, idx: number) => {
+        const moveFromArr = completed ? "completedTodos" : "todos"
+        const moveToArr = completed ? "todos" : "completedTodos"
+        moveToDoes(moveFromArr, moveToArr, idx)
 
     }
     return (
@@ -66,7 +74,17 @@ export default function TodoList({ todos }: {
 
 
                         >
-                            <Typography variant="h6">{title}</Typography>
+                            <Stack direction="row" spacing={2}>
+                                <Checkbox
+                                    color="success"
+                                    onChange={() => handleMove(completed, idx)}
+                                    checked={completed}
+
+                                />
+
+                                <Typography variant="h6">{title}</Typography>
+
+                            </Stack>
                         </AccordionSummary>
                         <AccordionDetails sx={{ height: '100%' }}>
                             <TodoDetails todo={todo} idx={idx} />
