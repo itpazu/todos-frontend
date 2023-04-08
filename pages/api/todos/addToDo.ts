@@ -1,36 +1,30 @@
 
-import { Todo } from '../../../src/context/globalContext';
 import { NextApiResponse, NextApiRequest } from 'next'
-import { createBasicHeaders } from '../../../src/lib/utils'
-
-type NewTodo = Pick<Todo, "title" | "description">;
+import { fetcher } from '../../../src/lib/utils'
 
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
-    // change that! 
-    const name = "itpazu"
-    const password = "morenito"
-    let response;
-    let headers = createBasicHeaders(name, password)
-    response = await fetch('https://drag-n-drop-sandy.vercel.app/todos/',
-        {
+    try {
+
+        let response = await fetcher({
+            endpoint: '/todos/',
             method: "POST",
-            headers,
-            body: JSON.stringify(req.body),
-
+            body: req.body
         })
-    let data = await response.json()
+        let data = await response.json()
+        if (response.status > 201) {
 
-    console.log(data)
-    if (response.status > 201) {
+            return res.status(response?.status || 500).json(data)
 
-        return res.status(response?.status || 500).json(data)
-
+        }
+        res.revalidate('/')
+        res.status(200).json({ ...data })
+    } catch (error) {
+        return res.status(500).json("Server error")
     }
-    res.revalidate('/')
-    res.status(200).json({ ...data })
+
 
 
 

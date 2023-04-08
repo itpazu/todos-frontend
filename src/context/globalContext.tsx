@@ -14,34 +14,43 @@ export type Todo = {
 }
 
 type DispatchPayload = {
-    [key: string]: Todo[]
+    [key: string]: Todo[] | any
 }
 
+export type FieldsChanges = Partial<Pick<Todo, "title" | "description">> & { id: number }
 export type State = {
     completedTodos: Todo[],
     todos: Todo[],
-    newTodos: Todo[]
+    newTodos: Todo[],
+    statusChanges: Array<[string, boolean]>
+    fieldsUpdates: Array<FieldsChanges>
 };
 const initialState = {
     completedTodos: [],
     todos: [],
-    newTodos: []
+    newTodos: [],
+    statusChanges: [],
+    fieldsUpdates: []
 }
 const globalReducer = (
     state: State = initialState,
     action: Action
 ) => {
-    switch (action.type) {
+    const { payload, type } = action
+    switch (type) {
+
         case "todos":
-            return { ...state, todos: action.payload.todos }
+            return { ...state, todos: payload.todos }
         case "completedTodos":
-            return { ...state, completedTodos: action.payload.todos }
+            return { ...state, completedTodos: payload.todos }
         case "both":
-            return { ...state, ...action.payload }
+            return { ...state, ...payload }
+        case "statusChanges":
+            return { ...state, ...payload }
         case "newTodo":
             return {
-                ...state, todos: [...action.payload.newItem,
-                ...state.todos], newTodos: [...state.newTodos, ...action.payload.newTodos]
+                ...state, todos: [...payload.newItem,
+                ...state.todos], newTodos: [...state.newTodos, ...payload.newTodos]
             }
         default:
             return state;

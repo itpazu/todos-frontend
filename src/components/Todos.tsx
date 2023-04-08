@@ -4,11 +4,13 @@ import { useGlobalContext } from '../context/globalContext';
 import TodoList from './TodoList';
 import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
-import { Todo, State } from '../context/globalContext'
 
+// implment edition
+// implement delete
+//implement submit all changes
+// implement discard changes
 export default function Todos() {
-    const { dispatch, state: { todos, completedTodos } } = useGlobalContext()
-    console.log(useGlobalContext())
+    const { dispatch, state: { todos, completedTodos, statusChanges } } = useGlobalContext()
     const [changes, setChanges] = useState<{ [index: number]: boolean }>({})
 
     // cache of the original state - completed / pending per todo in the database
@@ -18,9 +20,7 @@ export default function Todos() {
         }, {})
     }, [])
     // cache the original order of todos
-    const originaOrder = useMemo(() => todos.map(({ id }) => id)
-
-        , [])
+    const originaOrder = useMemo(() => todos.map(({ id }) => id), [])
 
     // evaluates the difference between original order of todos and the current order
     // returns a boolean to enable submit button if todos order changed
@@ -29,12 +29,12 @@ export default function Todos() {
     }
 
     // holds the value of the actual changed todos (from false to true and vice versa)
-    const filterChanges = useMemo<[string, boolean][]>(() => {
+    useEffect(() => {
         let entries = Object.entries(changes)
         let newEntries = entries.filter(([id, isCompleted]) => !(isCompleted === originalState[parseInt(id)]))
-        return newEntries
+        dispatch({ type: "statusChanges", payload: { statusChanges: newEntries } })
     }, [changes])
-    console.log(filterChanges)
+
     const todosDropHandler = (
         e: React.DragEvent<HTMLElement>
     ) => {
@@ -89,7 +89,7 @@ export default function Todos() {
                 xs={12}
             >
 
-                <SubmitChanges isReordered={isTodosReordered()} changes={filterChanges} />
+                <SubmitChanges isReordered={isTodosReordered()} changes={statusChanges} />
             </Grid>
             <Grid item justifyContent={'center'}
                 md={7}
