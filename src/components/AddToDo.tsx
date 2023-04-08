@@ -14,7 +14,8 @@ const newTodoModel: Todo = {
     title: "",
     description: "",
     id: 1,
-    completed: false
+    completed: false,
+    order: 0
 }
 
 export default function AddToDo() {
