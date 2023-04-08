@@ -7,12 +7,8 @@ import TextField from '@mui/material/TextField';
 import { Todo } from '../context/globalContext';
 import axios from 'axios';
 import { useGlobalContext } from '../context/globalContext';
+import { validate, HELPER_TEXT } from '../lib/utils';
 
-const HELPER_TEXT: { [key: string]: string } = {
-    title: 'at least 2 character long, must contain character/numbers',
-    description: 'please insert a description of at least 10 letters long'
-
-}
 
 const newTodoModel: Todo = {
     title: "",
@@ -20,35 +16,24 @@ const newTodoModel: Todo = {
     id: 1,
     completed: false
 }
+
 export default function AddToDo() {
     const { dispatch } = useGlobalContext()
     const [newTodo, setNewTodo] = useState<Todo>(newTodoModel)
-
+    // const router = useRouter()
     const submitNewTodo = async () => {
         // error handling
-        // const response = await axios.post('/api/todos/addToDo', { title: "FDS", description: "nllll" })
-        // console.log(response)
+        // const response = await axios.post('/api/todos/addToDo', { title: "router", description: "swr" })
+        // // router.reload()
+
         dispatch({ type: "newTodo", payload: { newItem: [newTodo], newTodos: [newTodo] } })
+        // setting temporaryIds (from 0 to negative to keep them unique) as ids are
+        //used in the logic of local changes tracking
         setNewTodo(prev => ({ ...newTodoModel, id: --prev.id }))
 
 
     }
 
-    const validate = (type: string, input: string) => {
-        switch (type) {
-            case "email":
-                return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(input)
-            case "name":
-                return /^[a-z|A-Z|\s]*$/.test(input)
-            case "title":
-                return input.length === 0 || (input.length > 1 && /^[a-z|A-Z|1-9\s]*$/.test(input))
-            case "description":
-                return !!input && input.length > 10
-            default:
-                return true
-
-        }
-    }
 
     const inputTitle: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const { currentTarget: { name, value } } = e;
@@ -73,7 +58,7 @@ export default function AddToDo() {
                     onChange={inputTitle}
                     name="title"
                     value={newTodo.title}
-                    error={isValid ? false : true}
+                    error={!isValid}
                     label="Add Todo"
                     placeholder="What else would you like to do?"
                     helperText={isValid ? "" : HELPER_TEXT["title"]}

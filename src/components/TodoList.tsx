@@ -1,4 +1,4 @@
-import React, { useRef, DragEvent, useEffect } from 'react';
+import React, { useRef, DragEvent, useState } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Todo as TodoProp } from '../context/globalContext';
 import { useGlobalContext } from '../context/globalContext';
+import TodoDetails from './TodoDetails';
 
 export default function TodoList({ todos }: {
     todos: TodoProp[],
@@ -14,6 +15,8 @@ export default function TodoList({ todos }: {
 
     let draggedItemIdx = useRef<number | null>(null)
     let draggedOver = useRef<number | null>(null)
+
+    const [showTitle, setShowTitle] = useState(true)
     const { state, dispatch } = useGlobalContext()
 
 
@@ -43,27 +46,30 @@ export default function TodoList({ todos }: {
     return (
 
         <>
-            {todos.map(({ title, description, completed, id }, idx) => {
+            {todos.map((todo, idx) => {
+                const { title, completed, id } = todo
                 return (
                     <Accordion
-                        id="this"
+                        TransitionProps={{ unmountOnExit: true }}
                         key={`${title + id}`}
                         draggable
                         onDragStart={(e) => dragStartHandler(e, idx, completed)}
                         onDragEnter={() => draggedOver.current = idx}
                         onDragEnd={() => handleDragEnd(completed)}
+                        onChange={(e) => setShowTitle(!showTitle)}
+
                     >
+
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel2a-content"
-                            id="panel2a-header"
+                            aria-controls="todo description"
+
+
                         >
-                            <Typography>{title}</Typography>
+                            <Typography variant="h6">{title}</Typography>
                         </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                {description}
-                            </Typography>
+                        <AccordionDetails sx={{ height: '100%' }}>
+                            <TodoDetails todo={todo} idx={idx} />
                         </AccordionDetails>
                     </Accordion>
                 )
