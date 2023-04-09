@@ -1,10 +1,11 @@
-import { Todo } from '../context/globalContext'
+import { Todo, TodosFromProps } from '../context/globalContext'
+import { MutatorCallback } from 'swr';
 
 const SERVER_URL = 'https://drag-n-drop-sandy.vercel.app/'
 
+
 type BasicHeadersArgs = { name: string, password: string }
 export const createBasicHeaders = ({ name, password }: BasicHeadersArgs) => {
-
     let headers = new Headers
     headers.set('Authorization', 'Basic ' + Buffer.from(name + ':' + password).toString('base64'))
     headers.set('Content-Type', 'application/json')
@@ -17,7 +18,7 @@ type FetcherArgs = {
     body?: {}
     credentials?: { name: string, password: string }
 }
-export const fetcher = ({
+export const fetcher: MutatorCallback = ({
     endpoint,
     body,
     credentials = {

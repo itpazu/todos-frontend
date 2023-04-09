@@ -59,6 +59,7 @@ const globalReducer = (
                 ...state.todos], newTodos: [...state.newTodos, ...payload.newTodos]
             }
         case "discardLocalChanges":
+        case "submitChanges":
             return { ...initialState, ...payload }
         case "deleteTodo":
             return { ...state, ...payload, deleted: [...state.deleted, ...payload.deleted] }

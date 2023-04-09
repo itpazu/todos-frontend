@@ -8,11 +8,13 @@ import SubmitChanges from './SubmitChanges';
 //implement submit all changes - note that new items may be in more then one place
 // present local changes on screen
 //login 
+
 export default function Todos({ originalTodos }: { originalTodos: TodosFromProps }) {
+
     const { dispatch, state } = useGlobalContext()
     const { todos, completedTodos } = state;
     const [changes, setChanges] = useState<{ [index: number]: boolean }>({})
-    console.log(state)
+    // console.log(state)
     // cache of the original state - completed / pending per todo in the database
     const originalState = useMemo(() => {
         return [...todos, ...completedTodos].reduce<{ [index: number]: boolean }>((prev, current) => {
