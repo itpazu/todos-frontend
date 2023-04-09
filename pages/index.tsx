@@ -1,40 +1,51 @@
 
 import React from 'react';
-import Todos from '../src/components/Todos';
-import { GlobalContextProvider, State as FetchStateProp, Todo } from '../src/context/globalContext';
-import { todoStatusDivider } from '../src/lib/utils';
-import { fetcher } from '../src/lib/utils';
+import { TodosFromProps, Todo } from '../src/context/globalContext';
+import { todoStatusDivider, fetcher as todoFetcher } from '../src/lib/utils';
+import { SWRConfig } from 'swr';
+import TodosContext from '../src/components/TodosContext';
 
 const ENDPOINT = 'todos/'
+
 export const getStaticProps = async () => {
 
   try {
-    const response = await fetcher({ endpoint: ENDPOINT })
+    const response = await todoFetcher({ endpoint: ENDPOINT })
     const data = await response.json()
 
     return {
       props: {
-        ...todoStatusDivider(data)
-      },
-      // revalidate: 10
-    };
+
+        fallback: {
+          '/api/todos': { ...todoStatusDivider(data) }
+        },
+      }
+    }
   } catch (error) {
     return {
       props: {
         todos: [],
         completedTodos: []
       },
-      // revalidate: 10
     };
   }
 
 };
-export default function TodoMain({ todos, completedTodos }: FetchStateProp) {
-  // const data = useSWR('/api/todos', fetcher)
+export default function TodoMain({ fallback }: { fallback: TodosFromProps }) {
   return (
-    <GlobalContextProvider FetchState={{ todos, completedTodos }}>
-      <Todos originalTodos={{ todos, completedTodos }} />
-    </GlobalContextProvider>
+    <SWRConfig value={{
+      fallback,
+      refreshInterval: 10000,
+      onErrorRetry: (error, key, _, revalidate, { retryCount }) => {
+        if (error.status === 404) return
+
+        if (retryCount >= 5) return
+
+        setTimeout(() => revalidate({ retryCount }), 5000)
+      }
+    }}>
+      <TodosContext />
+    </SWRConfig>
 
 
   );

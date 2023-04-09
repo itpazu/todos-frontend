@@ -64,7 +64,6 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
         setEditMode(!editMode)
 
     }
-    console.log(state)
 
     return (
         <Card sx={{ minWidth: 150 }} >

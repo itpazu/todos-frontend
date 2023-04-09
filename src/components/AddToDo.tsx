@@ -4,10 +4,10 @@ import Stack from '@mui/material/Stack'
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
-import { Todo } from '../context/globalContext';
-import axios from 'axios';
+import { Todo, TodosFromProps } from '../context/globalContext';
 import { useGlobalContext } from '../context/globalContext';
-import { validate, HELPER_TEXT } from '../lib/utils';
+import { validate, HELPER_TEXT, fetcher } from '../lib/utils';
+import useFetchTodos from './hooks/useTodos';
 
 
 const newTodoModel: Todo = {
@@ -19,18 +19,25 @@ const newTodoModel: Todo = {
 }
 
 export default function AddToDo() {
+    const { data, error, isLoading, mutate } = useFetchTodos()
+
+    // const { mutate } = useSWRConfig()
+
     const { dispatch } = useGlobalContext()
     const [newTodo, setNewTodo] = useState<Todo>(newTodoModel)
     // const router = useRouter()
     const submitNewTodo = async () => {
-        // error handling
-        // const response = await axios.post('/api/todos/addToDo', { title: "router", description: "swr" })
-        // // router.reload()
 
-        dispatch({ type: "newTodo", payload: { newItem: [newTodo], newTodos: [newTodo] } })
+        const newData = await mutate(fetcher({
+            endpoint: 'todos/',
+            method: "POST",
+            body: { title: newTodo.title, description: newTodo.description }
+        }))
+        // dispatch({ type: "newTodo", payload: { newItem: [newTodo], newTodos: [newTodo] } })
         // setting temporaryIds (from 0 to negative to keep them unique) as ids are
         //used in the logic of local changes tracking
         setNewTodo(prev => ({ ...newTodoModel, id: --prev.id }))
+        dispatch({ type: "submitChanges", payload: { ...(newData || {}) } })
 
 
     }
