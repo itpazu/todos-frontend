@@ -50,15 +50,19 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
     const onSubmitChanges = () => {
         const todosArrKey: keyof State = completed ? "completedTodos" : "todos"
         const todosArr = [...state[todosArrKey]]
-        const newTodo = { ...todo, ...input }
-        todosArr.splice(idx, 1, newTodo)
-        const fieldChnges: FieldsChanges = { ...input, id }
+        const editedTodo = { ...todo, ...input }
+        todosArr.splice(idx, 1, editedTodo)
+        const fieldChnges: FieldsChanges = { ...input }
         if (!monitorChangesTitle()) delete fieldChnges.title
         if (!monitorChangesDescription()) delete fieldChnges.description
 
         dispatch({
-            type: "statusChanges",
-            payload: { [todosArrKey]: todosArr, fieldsUpdates: [...state.fieldsUpdates, { ...fieldChnges }] }
+            type: "editTodo",
+            payload: {
+                changedTodoList: { [todosArrKey]: todosArr },
+                fieldsUpdates: fieldChnges,
+                todoId: id
+            }
 
         })
         setEditMode(!editMode)

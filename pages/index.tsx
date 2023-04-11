@@ -5,7 +5,7 @@ import { todoStatusDivider, fetcher as todoFetcher } from '../src/lib/utils';
 import { SWRConfig } from 'swr';
 import TodosContext from '../src/components/TodosContext';
 
-const ENDPOINT = 'todos/'
+const ENDPOINT = 'todos'
 
 export const getStaticProps = async () => {
 
