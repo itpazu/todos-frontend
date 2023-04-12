@@ -2,7 +2,7 @@ import { NextApiResponse, NextApiRequest } from 'next'
 import { todoStatusDivider, fetcher } from '../../../src/lib/utils';
 import { TodosFromProps } from '../../../src/context/globalContext';
 
-const ENDPOINT = 'todos/'
+const ENDPOINT = 'todos'
 
 export default async function handler(_: NextApiRequest, res: NextApiResponse<TodosFromProps>) {
 

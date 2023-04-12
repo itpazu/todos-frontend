@@ -21,18 +21,11 @@ export default function TodoList({ todos, moveToDoes }: {
 
     const [showTitle, setShowTitle] = useState(true)
     const { state, dispatch } = useGlobalContext()
-
+    console.log(state)
     const handleDragEnd = (completed: boolean) => {
-        let todosCopy;
-        let todosType;
-        if (completed) {
-            todosCopy = [...state.completedTodos]
-            todosType = "completedTodos"
-        } else {
-            todosCopy = [...state.todos]
-            todosType = "todos"
-        }
-        let removed = todosCopy.splice(draggedItemIdx.current as number, 1)
+        const todosType = completed ? "completedTodos" : "todos"
+        const todosCopy = [...state[todosType]]
+        const removed = todosCopy.splice(draggedItemIdx.current as number, 1)
         todosCopy.splice(draggedOver.current as number, 0, removed[0])
         dispatch({ type: todosType, payload: { todos: todosCopy } })
     }
@@ -52,12 +45,39 @@ export default function TodoList({ todos, moveToDoes }: {
         moveToDoes(moveFromArr, moveToArr, idx)
 
     }
+
+    // const filterOutDeleted = (id: number) => {
+    //     const newTodosListCopy = [...state.newTodos]
+    //     const filteredNewTodos = newTodosListCopy.filter((newTodo) => newTodo.id !== id)
+    //     const filterFieldsUpdates = { ...state.fieldsUpdates }
+    //     delete filterFieldsUpdates[id]
+    //     dispatch({
+    //         type: 'both', payload: {
+    //             newTodos: filteredNewTodos,
+    //             fieldsUpdates: filterFieldsUpdates
+    //         }
+    //     })
+
+    // }
+
     const handleDelete = (completed: boolean, idx: number) => {
         const currentList = completed ? "completedTodos" : "todos"
         const localListCopy = [...state[currentList]]
-        const deleted = localListCopy.splice(idx, 1)
-        dispatch({ type: "deleteTodo", payload: { [currentList]: localListCopy, deleted: deleted } })
-
+        let deleted = localListCopy.splice(idx, 1)
+        const deletedId = deleted[0].id
+        console.log(deletedId)
+        console.log(deleted)
+        dispatch({
+            type: "deleteTodo", payload: {
+                filteredTodos: {
+                    [currentList]: localListCopy
+                },
+                deleted: {
+                    deletedId,
+                    description: "delete"
+                }
+            }
+        })
 
     }
     return (

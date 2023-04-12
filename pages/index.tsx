@@ -5,7 +5,7 @@ import { todoStatusDivider, fetcher as todoFetcher } from '../src/lib/utils';
 import { SWRConfig } from 'swr';
 import TodosContext from '../src/components/TodosContext';
 
-const ENDPOINT = 'todos/'
+const ENDPOINT = 'todos'
 
 export const getStaticProps = async () => {
 
@@ -35,7 +35,7 @@ export default function TodoMain({ fallback }: { fallback: TodosFromProps }) {
   return (
     <SWRConfig value={{
       fallback,
-      refreshInterval: 10000,
+      // refreshInterval: 10000,
       onErrorRetry: (error, key, _, revalidate, { retryCount }) => {
         if (error.status === 404) return
 
