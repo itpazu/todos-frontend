@@ -12,24 +12,25 @@ import { validate, HELPER_TEXT, fetcher } from '../lib/utils';
 const newTodoModel: Todo = {
     title: "",
     description: "",
-    id: 1,
+    id: 0,
     completed: false,
     order: 0
 }
 
 export default function AddToDo() {
 
-    // const { mutate } = useSWRConfig()
     const { dispatch } = useGlobalContext()
     const [newTodo, setNewTodo] = useState<Todo>(newTodoModel)
-    // const router = useRouter()
     const submitNewTodo = () => {
-        // const newData = await mutate(fetcher({
-        //     endpoint: 'todos/',
-        //     method: "POST",
-        //     body: { title: newTodo.title, description: newTodo.description }
-        // }))
-        dispatch({ type: "newTodo", payload: { newItem: [newTodo] } })
+        const newTodoCopy = { ...newTodo }
+        const { id, ...rest } = newTodoCopy
+        dispatch({
+            type: "newTodo", payload: {
+                newItem: newTodoCopy,
+                fieldsUpdates: { [newTodoCopy.id]: rest }
+            }
+        })
+        // dispatch({ type: "newTodo", payload: { newItem: [newTodo] } })
         // setting temporaryIds (from 0 to negative to keep them unique) as ids are
         //used in the logic of local changes tracking
         setNewTodo(prev => ({ ...newTodoModel, id: --prev.id }))

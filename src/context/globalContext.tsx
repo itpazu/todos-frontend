@@ -1,6 +1,5 @@
 import React, { ReactNode, useReducer, createContext, useContext } from 'react';
 import { Key } from 'swr';
-import _merge from 'lodash.merge';
 
 type Action = { type: string, payload: DispatchPayload }
 
@@ -18,7 +17,7 @@ export type Todo = {
 type DispatchPayload = {
     [key: string]: Todo[] | any
 }
-export type FieldsChanges = Partial<Pick<Todo, "title" | "description">>
+export type FieldsChanges = Partial<Pick<Todo, "title" | "description" | "id">>
 
 export type TodosFromProps = Pick<State, "todos" | "completedTodos">
 export type TodosFromState = keyof TodosFromProps
@@ -29,17 +28,13 @@ type TodoChanges<T extends object> = { [key: number]: { [key in keyof T]?: T[key
 export type State = {
     completedTodos: Todo[],
     todos: Todo[],
-    newTodos: Todo[],
-    deleted: Todo[]
     fieldsUpdates: TodoChanges<Todo>
 };
 
 export const initialState = {
     todos: [],
     completedTodos: [],
-    newTodos: [],
     fieldsUpdates: {},
-    deleted: [],
 }
 const globalReducer = (
     state: State = initialState,
@@ -63,7 +58,7 @@ const globalReducer = (
                     [payload.id]: changeItem
                 }
             }
-            if (Object.keys(newState.fieldsUpdates[payload.id]).length === 0) {
+            if (Object.keys(newState.fieldsUpdates[payload.id]).length === 1) {
                 delete newState.fieldsUpdates[payload.id]
             }
             return { ...newState }
@@ -80,10 +75,12 @@ const globalReducer = (
             }
 
         case "newTodo":
+
+
             return {
-                ...state, todos: [...payload.newItem,
+                ...state, todos: [payload.newItem,
                 ...state.todos],
-                newTodos: [...state.newTodos, ...payload.newItem]
+                fieldsUpdates: { ...state.fieldsUpdates, ...payload.fieldsUpdates }
             }
         case "editTodo":
             return {
@@ -104,9 +101,9 @@ const globalReducer = (
                 ...state, ...payload.filteredTodos,
                 fieldsUpdates: {
                     ...state.fieldsUpdates,
-                    [payload.deleted.deletedId]: {
-                        ...state.fieldsUpdates[payload.deleted.deletedId],
-                        description: "delete"
+                    [payload.deleted.id]: {
+                        ...state.fieldsUpdates[payload.deleted.id],
+                        ...payload.deleted
                     }
                 }
             }

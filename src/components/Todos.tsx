@@ -1,28 +1,28 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Paper, Grid } from '@mui/material';
-import { useGlobalContext, MovToDoesHandler, TodosFromProps, Todo } from '../context/globalContext';
+import { useGlobalContext, MovToDoesHandler, Todo } from '../context/globalContext';
 import TodoList from './TodoList';
 import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
+import useFetchTodos from './hooks/useTodos';
 
 //implement submit all changes - note that new items may be in more then one place
 // present local changes on screen
 //login 
 
-export default function Todos({ originalTodos }: { originalTodos: TodosFromProps }) {
-
+export default function Todos() {
     const { dispatch, state } = useGlobalContext()
     const { todos, completedTodos } = state;
 
     // cache of the original state - completed / pending per todo in the database
-    const originalState = useMemo(() => {
+    const originalState = () => {
         return [...todos, ...completedTodos].reduce<Map<number, boolean>>((prevMap, current) => {
             return prevMap.set(current.id, current.completed)
         }, new Map)
-    }, [])
+    }
     // cache the original order of todos
-    const originaOrderTodos = useMemo(() => todos.map(({ id }) => id), [])
-    const originaOrderCompletedTodos = useMemo(() => completedTodos.map(({ id }) => id), [])
+    const originaOrderTodos = () => todos.map(({ id }) => id)
+    const originaOrderCompletedTodos = () => completedTodos.map(({ id }) => id)
 
     // evaluates the difference between original order of todos and the current order
     // returns a boolean to enable submit button if todos order changed
@@ -32,33 +32,37 @@ export default function Todos({ originalTodos }: { originalTodos: TodosFromProps
         return originalOrder.some((val, idx) => !(val === curentOrder[idx]?.id))
     }
     const areTodosReordered = () => {
-        const reorderedTodos = evaluateCurrentOrder(originaOrderTodos, todos)
-        const reorderedCompletedTodos = evaluateCurrentOrder(originaOrderCompletedTodos, completedTodos)
-        console.log(reorderedTodos, reorderedCompletedTodos)
+        const reorderedTodos = evaluateCurrentOrder(originaOrderTodos(), todos)
+        const reorderedCompletedTodos = evaluateCurrentOrder(originaOrderCompletedTodos(), completedTodos)
         return reorderedTodos || reorderedCompletedTodos
 
     }
 
     const updateStatusIfChanged = (id: number, newStatus: boolean) => {
-        if ((originalState.get(id) === newStatus)) {
-            return dispatch({
+        let Dispatchpayload;
+        if ((originalState().get(id) === newStatus)) {
+            Dispatchpayload = {
                 type: "removeStatusChange", payload: {
                     id
                 }
-            })
-        }
-        dispatch({
-            type: "statusChanges", payload: {
-                id,
-                fieldsUpdates: {
-                    [id]: {
-                        completed: newStatus,
-                    }
-
-                }
             }
+        } else {
+            Dispatchpayload = {
+                type: "statusChanges",
+                payload: {
+                    id,
+                    fieldsUpdates: {
+                        [id]: {
+                            id,
+                            completed: newStatus,
+                        }
 
-        })
+                    }
+                }
+
+            }
+        }
+        dispatch(Dispatchpayload)
     }
     const moveTodoHandler: MovToDoesHandler = (moveFromArr, moveToArr, idx) => {
         const constTodoToEdit = { ...state[moveFromArr][idx] }
@@ -113,7 +117,6 @@ export default function Todos({ originalTodos }: { originalTodos: TodosFromProps
                 padding={3}
             >
                 <SubmitChanges
-                    originalTodos={originalTodos}
                     areReordered={areTodosReordered()}
                 />
             </Grid>

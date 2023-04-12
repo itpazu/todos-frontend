@@ -12,7 +12,6 @@ export const getStaticProps = async () => {
   try {
     const response = await todoFetcher({ endpoint: ENDPOINT })
     const data = await response.json()
-
     return {
       props: {
 
@@ -24,8 +23,12 @@ export const getStaticProps = async () => {
   } catch (error) {
     return {
       props: {
-        todos: [],
-        completedTodos: []
+        InitialData: {
+
+          todos: [],
+          completedTodos: []
+        }
+
       },
     };
   }

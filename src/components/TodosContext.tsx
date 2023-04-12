@@ -8,10 +8,10 @@ import useFetchTodos from '../components/hooks/useTodos'
 
 export default function TodosContext() {
     const { data, error, isLoading } = useFetchTodos()
-
+    const appData = error ? { todos: [], completedTodos: [] } : data
     return (
-        <GlobalContextProvider FetchState={{ ...data }}>
-            <Todos originalTodos={{ ...(data || { todos: [], completedTodos: [] }) }} />
+        <GlobalContextProvider FetchState={{ ...appData }}>
+            <Todos />
         </GlobalContextProvider>
 
 

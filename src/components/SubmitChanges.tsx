@@ -1,22 +1,22 @@
 
 import React, { useState } from "react";
 import { Button, Stack } from "@mui/material";
-import { useGlobalContext, TodosFromProps, Todo } from "../context/globalContext";
+import { useGlobalContext, TodosFromProps } from "../context/globalContext";
 import useFetchTodos from './hooks/useTodos';
-import _merge from 'lodash.merge';
 import { fetcher } from '../lib/utils';
 import Loader from './Loader';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography';
 export default function SubmitChanges({
     areReordered,
-    originalTodos }:
+}:
     {
         areReordered: boolean,
-        originalTodos: TodosFromProps,
     }) {
     const { state, dispatch } = useGlobalContext()
-    const { fieldsUpdates, newTodos, deleted, todos, completedTodos } = state;
+    const { fieldsUpdates } = state;
     const [storeStatus, setStoreStatus] = useState({ error: false, message: '', showMessage: false })
     const [inProgress, setInprogress] = useState(false)
     const { data, error, isLoading, mutate } = useFetchTodos()
@@ -25,36 +25,18 @@ export default function SubmitChanges({
 
 
     const getUpdates = () => {
-        const updatesdCopy = { ...fieldsUpdates }
-        const enrichched = Object.entries(updatesdCopy).map(([key, val]) => {
-            return [key, { id: parseInt(key), ...val }]
+        // deleteing new items which has been also deleted
+        return Object.values({ ...fieldsUpdates }).filter((item) => {
+            const fallbackId = item?.id ?? 1
+            return !(item.description === "delete" && fallbackId <= 0)
         })
-        return Object.fromEntries(enrichched)
 
     }
-    const mergeAllupdateTodos = () => {
-        // implement
-        const newTodosMap = getNewTodos()
-        const updatesWithIds = getUpdates()
-        const merged = _merge(newTodosMap, updatesWithIds)
 
-        return merged
-
-    }
-    const getNewTodos = () => {
-        return newTodos.reduce<{ [index: number]: Omit<Todo, "id"> }>((prev, current) => {
-            const { id, ...res } = current;
-            prev[id] = res;
-            return prev
-        }, {}
-        )
-
-
-    }
 
     const storeLocalChangesInDb = async () => {
-        mergeAllupdateTodos()
-        const body = Object.values(mergeAllupdateTodos())
+        const body = getUpdates()
+        console.log(body)
         try {
             setInprogress(true)
             const response = await fetcher({ endpoint: 'modify', method: "PUT", body })
@@ -65,6 +47,10 @@ export default function SubmitChanges({
                     ...prev,
                     message: "successfully stored your changes!", showMessage: true
                 }))
+                const newData = await mutate()
+                console.log(newData)
+                dispatch({ type: "submitChanges", payload: { ...newData } })
+
 
             } else {
                 const errorMessage = `changes were not stored,
@@ -75,7 +61,7 @@ export default function SubmitChanges({
 
             setStoreStatus(prev => ({
                 ...prev, error: true,
-                message: "something went wrong... cahnges not stored",
+                message: "seems like our server makes troubles...",
                 showMessage: true
             }))
 
@@ -91,13 +77,52 @@ export default function SubmitChanges({
 
         >
             <Loader open={inProgress} />
-            <Alert severity="success" sx={(theme) => ({
-                position: 'absolute',
-                top: '40%', right: '50%', zIndex: theme.zIndex.drawer + 1
-            })}>
-                <AlertTitle >Success</AlertTitle>
-                This is a success alert — <strong>check it out!</strong>
-            </Alert>
+            {storeStatus.showMessage &&
+
+                <Box
+                    padding={0}
+                    sx={(theme) => ({
+                        position: 'absolute',
+                        top: '0px',
+                        right: '0px',
+                        bottom: '0px',
+                        left: '0px',
+                        height: '100vh',
+                        width: '100vw',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        zIndex: theme.zIndex.drawer + 1,
+                        '&.MuiBox-root': { 'ml': '0px' }
+                    })}>
+
+                    <Alert sx={{
+                        height: "40vh",
+                        width: {
+                            xs: "80vw",
+                            md: '40vw',
+                            lg: "30vw"
+                        },
+                        "&.MuiPaper-root": { justifyContent: "center", alignItems: "center" }
+                    }}
+                        severity={storeStatus.error ? "error" : "success"} >
+                        <Stack sx={{ width: '100%' }} spacing={4} justifyContent={'center'} alignItems={'center'} >
+
+                            <AlertTitle >
+                                {storeStatus.error ? "something went wrong.." : "Awesome!"}
+                            </AlertTitle>
+                            <Typography>
+
+                                {storeStatus.error ? `${storeStatus.message}` : "Your todos are safe and sound!"}
+                            </Typography>
+                            <Button variant="contained"
+                                color={storeStatus.error ? "error" : "success"}
+                                onClick={() => { setStoreStatus(prev => ({ ...prev, showMessage: false })) }}
+                            >Got it</Button>
+                        </Stack>
+                    </Alert>
+                </Box>
+            }
             <Button
 
                 sx={{ height: '100%' }}
@@ -116,10 +141,12 @@ export default function SubmitChanges({
                 disabled={
                     !areReordered && Object.keys(fieldsUpdates).length === 0
                 }
-                onClick={() => dispatch({
-                    type: 'discardLocalChanges', payload:
-                        originalTodos.todos.length > 0 ? originalTodos : { todos: [...newTodos] }
-                })}
+                onClick={async () => {
+                    dispatch({
+                        type: 'discardLocalChanges', payload: { ...data }
+
+                    })
+                }}
             >
                 discard changes
             </Button>

@@ -52,15 +52,15 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
         const todosArr = [...state[todosArrKey]]
         const editedTodo = { ...todo, ...input }
         todosArr.splice(idx, 1, editedTodo)
-        const fieldChnges: FieldsChanges = { ...input }
-        if (!monitorChangesTitle()) delete fieldChnges.title
-        if (!monitorChangesDescription()) delete fieldChnges.description
+        const fieldChanges: FieldsChanges = { ...input, id }
+        if (!monitorChangesTitle()) delete fieldChanges.title
+        if (!monitorChangesDescription()) delete fieldChanges.description
 
         dispatch({
             type: "editTodo",
             payload: {
                 changedTodoList: { [todosArrKey]: todosArr },
-                fieldsUpdates: fieldChnges,
+                fieldsUpdates: fieldChanges,
                 todoId: id
             }
 
