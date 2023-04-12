@@ -82,7 +82,8 @@ const globalReducer = (
         case "newTodo":
             return {
                 ...state, todos: [...payload.newItem,
-                ...state.todos], newTodos: [...state.newTodos, ...payload.newItem]
+                ...state.todos],
+                newTodos: [...state.newTodos, ...payload.newItem]
             }
         case "editTodo":
             return {
@@ -99,7 +100,16 @@ const globalReducer = (
         case "submitChanges":
             return { ...initialState, ...payload }
         case "deleteTodo":
-            return { ...state, ...payload, deleted: [...state.deleted, ...payload.deleted] }
+            return {
+                ...state, ...payload.filteredTodos,
+                fieldsUpdates: {
+                    ...state.fieldsUpdates,
+                    [payload.deleted.deletedId]: {
+                        ...state.fieldsUpdates[payload.deleted.deletedId],
+                        description: "delete"
+                    }
+                }
+            }
         default:
             return state;
     }

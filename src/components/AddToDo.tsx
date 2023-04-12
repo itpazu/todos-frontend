@@ -23,8 +23,7 @@ export default function AddToDo() {
     const { dispatch } = useGlobalContext()
     const [newTodo, setNewTodo] = useState<Todo>(newTodoModel)
     // const router = useRouter()
-    const submitNewTodo = async () => {
-
+    const submitNewTodo = () => {
         // const newData = await mutate(fetcher({
         //     endpoint: 'todos/',
         //     method: "POST",

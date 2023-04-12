@@ -35,7 +35,7 @@ export default function TodoMain({ fallback }: { fallback: TodosFromProps }) {
   return (
     <SWRConfig value={{
       fallback,
-      refreshInterval: 10000,
+      // refreshInterval: 10000,
       onErrorRetry: (error, key, _, revalidate, { retryCount }) => {
         if (error.status === 404) return
 

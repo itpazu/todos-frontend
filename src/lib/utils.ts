@@ -18,7 +18,7 @@ type FetcherArgs = {
     body?: {}
     credentials?: { name: string, password: string }
 }
-export const fetcher: MutatorCallback = ({
+export const fetcher = ({
     endpoint,
     body,
     credentials = {

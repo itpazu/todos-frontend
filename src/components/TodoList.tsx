@@ -46,30 +46,38 @@ export default function TodoList({ todos, moveToDoes }: {
 
     }
 
-    const filterOutDeleted = (id: number) => {
-        const newTodosListCopy = [...state.newTodos]
-        const filteredNewTodos = newTodosListCopy.filter((newTodo) => newTodo.id !== id)
-        const filterFieldsUpdates = { ...state.fieldsUpdates }
-        delete filterFieldsUpdates[id]
-        dispatch({
-            type: 'both', payload: {
-                newTodos: filteredNewTodos,
-                fieldsUpdates: filterFieldsUpdates
-            }
-        })
+    // const filterOutDeleted = (id: number) => {
+    //     const newTodosListCopy = [...state.newTodos]
+    //     const filteredNewTodos = newTodosListCopy.filter((newTodo) => newTodo.id !== id)
+    //     const filterFieldsUpdates = { ...state.fieldsUpdates }
+    //     delete filterFieldsUpdates[id]
+    //     dispatch({
+    //         type: 'both', payload: {
+    //             newTodos: filteredNewTodos,
+    //             fieldsUpdates: filterFieldsUpdates
+    //         }
+    //     })
 
-    }
+    // }
 
     const handleDelete = (completed: boolean, idx: number) => {
         const currentList = completed ? "completedTodos" : "todos"
         const localListCopy = [...state[currentList]]
         let deleted = localListCopy.splice(idx, 1)
         const deletedId = deleted[0].id
-        if (deletedId <= 0) {
-            deleted = []
-        }
-        dispatch({ type: "deleteTodo", payload: { [currentList]: localListCopy, deleted: deleted } })
-        filterOutDeleted(deletedId)
+        console.log(deletedId)
+        console.log(deleted)
+        dispatch({
+            type: "deleteTodo", payload: {
+                filteredTodos: {
+                    [currentList]: localListCopy
+                },
+                deleted: {
+                    deletedId,
+                    description: "delete"
+                }
+            }
+        })
 
     }
     return (
