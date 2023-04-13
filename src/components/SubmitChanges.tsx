@@ -1,14 +1,14 @@
 
 import React, { useState } from "react";
 import { Button, Stack } from "@mui/material";
-import { useGlobalContext, TodosFromProps } from "../context/globalContext";
+import { useGlobalContext } from "../context/globalContext";
 import useFetchTodos from './hooks/useTodos';
-import { fetcher } from '../lib/utils';
 import Loader from './Loader';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography';
+import axios from "axios";
 export default function SubmitChanges({
     areReordered,
 }:
@@ -19,7 +19,7 @@ export default function SubmitChanges({
     const { fieldsUpdates } = state;
     const [storeStatus, setStoreStatus] = useState({ error: false, message: '', showMessage: false })
     const [inProgress, setInprogress] = useState(false)
-    const { data, error, isLoading, mutate } = useFetchTodos()
+    const { data, mutate } = useFetchTodos()
 
 
 
@@ -33,14 +33,12 @@ export default function SubmitChanges({
 
     }
 
-
     const storeLocalChangesInDb = async () => {
         const body = getUpdates()
         console.log(body)
         try {
             setInprogress(true)
-            const response = await fetcher({ endpoint: 'modify', method: "PUT", body })
-            const data = await response.json()
+            const response = await axios.post('/api/todos/modify', body)
             setInprogress(false)
             if (response.status === 200) {
                 setStoreStatus(prev => ({
@@ -48,16 +46,16 @@ export default function SubmitChanges({
                     message: "successfully stored your changes!", showMessage: true
                 }))
                 const newData = await mutate()
-                console.log(newData)
                 dispatch({ type: "submitChanges", payload: { ...newData } })
 
 
             } else {
                 const errorMessage = `changes were not stored,
-                 try again: ${data?.detail || "unkown reason"}`
+                 try again: ${response.data?.detail || "unkown reason"}`
                 setStoreStatus(prev => ({ ...prev, error: true, message: errorMessage, showMessage: true }))
             }
         } catch (err) {
+            setInprogress(false)
 
             setStoreStatus(prev => ({
                 ...prev, error: true,
@@ -117,7 +115,10 @@ export default function SubmitChanges({
                             </Typography>
                             <Button variant="contained"
                                 color={storeStatus.error ? "error" : "success"}
-                                onClick={() => { setStoreStatus(prev => ({ ...prev, showMessage: false })) }}
+                                onClick={() => {
+                                    setStoreStatus(prev => ({ ...prev, showMessage: false }))
+
+                                }}
                             >Got it</Button>
                         </Stack>
                     </Alert>

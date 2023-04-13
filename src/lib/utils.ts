@@ -17,15 +17,12 @@ type FetcherArgs = {
     endpoint: string,
     method?: string
     body?: {}
-    credentials?: { name: string, password: string }
+    credentials: { name: string, password: string }
 }
 export const fetcher = ({
     endpoint,
     body,
-    credentials = {
-        name: "itpazu",
-        password: "morenito" //change that!
-    },
+    credentials,
     method = "GET" }: FetcherArgs) => {
     const headers = createBasicHeaders(credentials)
     return fetch(`${SERVER_URL}${endpoint}`, {

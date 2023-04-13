@@ -8,9 +8,16 @@ import TodosContext from '../src/components/TodosContext';
 const ENDPOINT = 'todos'
 
 export const getStaticProps = async () => {
-
+  const userName = process.env.USERNAME
+  const password = process.env.PASSWORD
+  console.log(process.env.password)
   try {
-    const response = await todoFetcher({ endpoint: ENDPOINT })
+    const response = await todoFetcher({
+      endpoint: ENDPOINT, credentials: {
+        name: userName || '',
+        password: password || ''
+      },
+    })
     const data = await response.json()
     return {
       props: {
