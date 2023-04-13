@@ -7,7 +7,6 @@ import TextField from '@mui/material/TextField';
 import { Todo } from '../context/globalContext';
 import { useGlobalContext } from '../context/globalContext';
 import { validate, HELPER_TEXT } from '../lib/utils';
-import theme from '../theme';
 
 
 const newTodoModel: Todo = {
@@ -31,11 +30,10 @@ export default function AddToDo() {
                 fieldsUpdates: { [newTodoCopy.id]: rest }
             }
         })
-        // dispatch({ type: "newTodo", payload: { newItem: [newTodo] } })
+
         // setting temporaryIds (from 0 to negative to keep them unique) as ids are
         //used in the logic of local changes tracking
         setNewTodo(prev => ({ ...newTodoModel, id: --prev.id }))
-        // dispatch({ type: "submitChanges", payload: { ...(newData || {}) } })
 
 
     }
@@ -65,7 +63,7 @@ export default function AddToDo() {
                     name="title"
                     value={newTodo.title}
                     error={!isValid}
-                    label="Add Todo"
+                    label="They talk. You do."
                     placeholder="What else would you like to do?"
                     helperText={isValid ? "" : HELPER_TEXT["title"]}
                 />

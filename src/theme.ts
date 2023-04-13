@@ -5,7 +5,6 @@ import { red } from '@mui/material/colors';
 
 const theme = responsiveFontSizes(createTheme({
   palette: {
-
     primary: {
       main: '#f0f4c3',
     },
@@ -29,6 +28,23 @@ const theme = responsiveFontSizes(createTheme({
         root: {
           textTransform: "capitalize"
         }
+      }
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .Mui-selected': { color: '#bcaaa4', opacity: 1 }
+        }
+      }
+    },
+    MuiButtonBase: {
+      styleOverrides: {
+        root: {
+          "&:disabled": {
+            backgroundColor: "#f0f4c3"
+          }
+        }
+
       }
     }
   }

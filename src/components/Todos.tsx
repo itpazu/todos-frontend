@@ -1,14 +1,10 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React from 'react';
 import { Paper, Grid } from '@mui/material';
 import { useGlobalContext, MovToDoesHandler, Todo } from '../context/globalContext';
 import TodoList from './TodoList';
 import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
-import useFetchTodos from './hooks/useTodos';
 
-//implement submit all changes - note that new items may be in more then one place
-// present local changes on screen
-//login 
 
 export default function Todos() {
     const { dispatch, state } = useGlobalContext()
@@ -26,8 +22,6 @@ export default function Todos() {
 
     // evaluates the difference between original order of todos and the current order
     // returns a boolean to enable submit button if todos order changed
-
-
     const evaluateCurrentOrder = (originalOrder: number[], curentOrder: Todo[]) => {
         return originalOrder.some((val, idx) => !(val === curentOrder[idx]?.id))
     }

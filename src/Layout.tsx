@@ -12,11 +12,14 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
             padding={2}
             columns={{ xs: 12, md: 10 }}
             sx={theme => ({ minHeight: '100vh', backgroundColor: theme.palette.primary.main })}
+            justifyContent={'center'}
 
         >
-            <Grid item container xs={12} justifyContent={'center'} sx={{ minHeight: '10vh' }}>
-                <Typography sx={{ fontfamily: 'Caveat' }}
-                    variant='h3'> Todo app </Typography>
+            <Typography sx={{ fontfamily: 'Caveat' }}
+                variant='h3'> U-ppTo-Do </Typography>
+            <Grid item container xs={12} justifyContent={'center'} sx={{ minHeight: '5vh' }}>
+                <Typography sx={{ fontfamily: 'Caveat', justifySelf: 'left' }}
+                    variant='body1'> Youv'e got to do what youv'w got to do. </Typography>
             </Grid>
             {children}
 

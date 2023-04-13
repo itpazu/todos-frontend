@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -125,11 +124,14 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
                 </Stack>
 
             </CardContent>
-            <Stack direction={{ md: "row" }} justifyContent={"space-between"}>
+            <Stack direction={{ md: "row" }} >
 
                 <CardActions>
                     <Button
                         size="medium"
+                        sx={{
+                            backgroundColor: editMode ? "#e57373" : "#aed581"
+                        }}
                         onClick={() => {
                             editMode && setInput({
                                 title,
@@ -139,7 +141,7 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
                         }}>{editMode ? "discard" : "edit"}</Button>
                 </CardActions>
                 <CardActions>
-                    <Button size="medium" disabled={
+                    <Button size="medium" sx={{ backgroundColor: "#e57373" }} disabled={
                         !(checkIfChanges() && (isValidTitle && isValidDescription))
                     }
                         onClick={onSubmitChanges}>Submit</Button>
