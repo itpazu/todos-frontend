@@ -6,7 +6,8 @@ import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
 import { Todo } from '../context/globalContext';
 import { useGlobalContext } from '../context/globalContext';
-import { validate, HELPER_TEXT, fetcher } from '../lib/utils';
+import { validate, HELPER_TEXT } from '../lib/utils';
+import theme from '../theme';
 
 
 const newTodoModel: Todo = {
@@ -74,6 +75,7 @@ export default function AddToDo() {
                     disabled={!isValid ||
                         (newTodo.title as string).length === 0}
                     onClick={submitNewTodo}
+                    sx={theme => ({ backgroundColor: theme.palette.secondary.main })}
                 >
                     <AddIcon />
                 </Fab>

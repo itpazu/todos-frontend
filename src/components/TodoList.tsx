@@ -21,7 +21,6 @@ export default function TodoList({ todos, moveToDoes }: {
 
     const [showTitle, setShowTitle] = useState(true)
     const { state, dispatch } = useGlobalContext()
-    console.log(state)
     const handleDragEnd = (completed: boolean) => {
         const todosType = completed ? "completedTodos" : "todos"
         const todosCopy = [...state[todosType]]
@@ -80,6 +79,7 @@ export default function TodoList({ todos, moveToDoes }: {
                         onDragEnter={() => draggedOver.current = idx}
                         onDragEnd={() => handleDragEnd(completed)}
                         onChange={(e) => setShowTitle(!showTitle)}
+                        sx={{ backgroundColor: "#e0e0e0" }}
 
                     >
 

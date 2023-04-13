@@ -125,8 +125,8 @@ export default function SubmitChanges({
             }
             <Button
 
-                sx={{ height: '100%' }}
-
+                sx={{ height: '100%', }}
+                color="secondary"
                 size="medium"
                 variant="contained"
                 onClick={storeLocalChangesInDb}
@@ -135,7 +135,7 @@ export default function SubmitChanges({
                 submit changes
             </Button>
             <Button
-                color="secondary"
+                sx={{ backgroundColor: "#e57373" }}
                 size="medium"
                 variant="contained"
                 disabled={

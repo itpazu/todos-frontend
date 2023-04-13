@@ -1,18 +1,27 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
 
-// Create a theme instance.
-const theme = createTheme({
+
+
+const theme = responsiveFontSizes(createTheme({
   palette: {
-    // primary: {
-    //   // main: '#556cd6',
-    // },
+
+    primary: {
+      main: '#f0f4c3',
+    },
     secondary: {
-      main: '#19857b',
+      main: '#aed581',
     },
     error: {
       main: red.A400,
     },
+  },
+  typography: {
+    fontFamily: [
+      'Pro_Sorce_Code', 'Caveat',
+
+    ].join(','),
+    htmlFontSize: 13
   },
   components: {
     MuiTypography: {
@@ -23,6 +32,6 @@ const theme = createTheme({
       }
     }
   }
-});
+}))
 
 export default theme;

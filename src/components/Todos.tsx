@@ -135,7 +135,7 @@ export default function Todos() {
                     onDrop={completedTodosDropHandler}
                     onDragOver={dragStartHandler}
                 >
-                    <Paper sx={{ height: '100%', padding: 2 }}>
+                    <Paper sx={{ height: '100%', padding: 2, backgroundColor: "#aed581" }}>
                         <TodoList todos={completedTodos} moveToDoes={moveTodoHandler} />
 
                     </Paper>
@@ -148,7 +148,7 @@ export default function Todos() {
                 onDrop={todosDropHandler}
                 onDragOver={dragStartHandler}
                 justifyContent="center" >
-                <Paper id="source" sx={{ height: '100%', padding: 2 }} >
+                <Paper id="source" sx={{ height: '100%', padding: 2, backgroundColor: "#e57373" }} >
                     <TodoList todos={todos} moveToDoes={moveTodoHandler} />
                 </Paper>
             </Grid>
