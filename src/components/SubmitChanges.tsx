@@ -19,8 +19,8 @@ export default function SubmitChanges({
     const { fieldsUpdates } = state;
     const [storeStatus, setStoreStatus] = useState({ error: false, message: '', showMessage: false })
     const [inProgress, setInprogress] = useState(false)
-    const { data, mutate } = useFetchTodos()
-
+    const { data: asFreshTodos, mutate } = useFetchTodos()
+    console.log('data from uswr', asFreshTodos)
 
 
 
@@ -38,15 +38,15 @@ export default function SubmitChanges({
         console.log(body)
         try {
             setInprogress(true)
-            const response = await axios.post('/api/todos/modify', body)
+            const response = await axios.post('/api/modify', body)
             setInprogress(false)
             if (response.status === 200) {
                 setStoreStatus(prev => ({
                     ...prev,
                     message: "successfully stored your changes!", showMessage: true
                 }))
-                const newData = await mutate()
-                dispatch({ type: "submitChanges", payload: { ...newData } })
+                await mutate()
+                dispatch({ type: "submitChanges", payload: { ...asFreshTodos } })
 
 
             } else {
@@ -144,7 +144,7 @@ export default function SubmitChanges({
                 }
                 onClick={async () => {
                     dispatch({
-                        type: 'discardLocalChanges', payload: { ...data }
+                        type: 'discardLocalChanges', payload: { ...asFreshTodos }
 
                     })
                 }}

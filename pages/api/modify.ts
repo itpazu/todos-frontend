@@ -1,15 +1,13 @@
 import { NextApiResponse, NextApiRequest } from 'next'
-import { todoStatusDivider, fetcher } from '../../../src/lib/utils';
-import { TodosFromProps } from '../../../src/context/globalContext';
+import { fetcher } from '../../src/lib/utils';
+import { TodosFromProps } from '../../src/context/globalContext';
 
-const ENDPOINT = 'todos'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<TodosFromProps>) {
     const userName = process.env.USERNAME
     const password = process.env.PASSWORD
     let body = req.body
     let data
-    console.log(body)
     try {
 
         let response = await fetcher({
@@ -20,12 +18,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             },
         })
         data = await response.json()
-        if (response.status > 201) {
-            res.status(response.status).json(todoStatusDivider(data))
+        if (response.status !== 200) {
+            res.status(response.status).json(data)
 
         }
         else {
-
+            console.log(data)
             res.status(response.status).json(data)
         }
     } catch (error) {
