@@ -10,7 +10,6 @@ const ENDPOINT = 'todos'
 export const getStaticProps = async () => {
   const userName = process.env.USERNAME
   const password = process.env.PASSWORD
-  console.log(process.env.password)
   try {
     const response = await todoFetcher({
       endpoint: ENDPOINT, credentials: {

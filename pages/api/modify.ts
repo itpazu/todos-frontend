@@ -18,12 +18,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             },
         })
         data = await response.json()
-        if (response.status !== 200) {
+        if (response.status === 200) {
             res.status(response.status).json(data)
 
         }
         else {
-            console.log(data)
             res.status(response.status).json(data)
         }
     } catch (error) {

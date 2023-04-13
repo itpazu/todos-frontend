@@ -19,7 +19,7 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
                 variant='h3'> U-ppTo-Do </Typography>
             <Grid item container xs={12} justifyContent={'center'} sx={{ minHeight: '5vh' }}>
                 <Typography sx={{ fontfamily: 'Caveat', justifySelf: 'left' }}
-                    variant='body1'> Youv'e got to do what youv'w got to do. </Typography>
+                    variant='body1'> Youv&apos'e got to do what youv&apos'e got to do. </Typography>
             </Grid>
             {children}
 

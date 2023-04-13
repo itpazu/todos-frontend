@@ -20,9 +20,9 @@ export default function SubmitChanges({
     const [storeStatus, setStoreStatus] = useState({ error: false, message: '', showMessage: false })
     const [inProgress, setInprogress] = useState(false)
     const { data: asFreshTodos, mutate } = useFetchTodos()
-    console.log('data from uswr', asFreshTodos)
+    // console.log('data from uswr\n', asFreshTodos)
 
-
+    console.log(state)
 
     const getUpdates = () => {
         // deleteing new items which has been also deleted
@@ -35,7 +35,6 @@ export default function SubmitChanges({
 
     const storeLocalChangesInDb = async () => {
         const body = getUpdates()
-        console.log(body)
         try {
             setInprogress(true)
             const response = await axios.post('/api/modify', body)
@@ -45,8 +44,10 @@ export default function SubmitChanges({
                     ...prev,
                     message: "successfully stored your changes!", showMessage: true
                 }))
-                await mutate()
-                dispatch({ type: "submitChanges", payload: { ...asFreshTodos } })
+                const res = await mutate()
+                console.log('data from mutate \n', res)
+                // console.log('fresh data in block \n', res)
+                dispatch({ type: "submitChanges", payload: { ...res } })
 
 
             } else {
