@@ -1,5 +1,4 @@
-import { Todo, TodosFromProps } from '../context/globalContext'
-import { MutatorCallback } from 'swr';
+import { Todo } from '../context/globalContext'
 
 // const SERVER_URL = 'http://localhost:8000/'
 const SERVER_URL = 'https://drag-n-drop-sandy.vercel.app/'

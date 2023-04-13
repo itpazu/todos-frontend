@@ -141,7 +141,7 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
                         }}>{editMode ? "discard" : "edit"}</Button>
                 </CardActions>
                 <CardActions>
-                    <Button size="medium" sx={{ backgroundColor: "#e57373" }} disabled={
+                    <Button size="medium" sx={{ backgroundColor: "#aed581" }} disabled={
                         !(checkIfChanges() && (isValidTitle && isValidDescription))
                     }
                         onClick={onSubmitChanges}>Submit</Button>

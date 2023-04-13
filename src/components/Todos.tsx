@@ -4,7 +4,8 @@ import { useGlobalContext, MovToDoesHandler, Todo } from '../context/globalConte
 import TodoList from './TodoList';
 import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
-
+import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
 
 export default function Todos() {
     const { dispatch, state } = useGlobalContext()
@@ -130,6 +131,9 @@ export default function Todos() {
                     onDragOver={dragStartHandler}
                 >
                     <Paper sx={{ height: '100%', padding: 2, backgroundColor: "#aed581" }}>
+                        <Stack justifyContent={'center'} direction={"row"} marginBottom={"10px"}>
+                            <Typography variant="h6"> DID </Typography>
+                        </Stack>
                         <TodoList todos={completedTodos} moveToDoes={moveTodoHandler} />
 
                     </Paper>
@@ -143,6 +147,10 @@ export default function Todos() {
                 onDragOver={dragStartHandler}
                 justifyContent="center" >
                 <Paper id="source" sx={{ height: '100%', padding: 2, backgroundColor: "#e57373" }} >
+                    <Stack justifyContent={'center'} direction={"row"} marginBottom={"10px"}>
+                        <Typography variant="h6"> DO </Typography>
+                    </Stack>
+
                     <TodoList todos={todos} moveToDoes={moveTodoHandler} />
                 </Paper>
             </Grid>

@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button, Stack } from "@mui/material";
-import { useGlobalContext } from "../context/globalContext";
+import { useGlobalContext, Todo } from "../context/globalContext";
 import useFetchTodos from './hooks/useTodos';
 import Loader from './Loader';
 import Alert from '@mui/material/Alert';
@@ -20,10 +20,18 @@ export default function SubmitChanges({
     const [storeStatus, setStoreStatus] = useState({ error: false, message: '', showMessage: false })
     const [inProgress, setInprogress] = useState(false)
     const { data: asFreshTodos, mutate } = useFetchTodos()
-    // console.log('data from uswr\n', asFreshTodos)
 
     console.log(state)
 
+    const removeTemporaryIds = (changesArr: Array<Partial<Todo>>) => {
+        return changesArr.map((item) => {
+            const fallbackId = item?.id ?? -1
+            if (fallbackId <= 0) {
+                delete item.id
+            }
+            return item
+        })
+    }
     const getUpdates = () => {
         // deleteing new items which has been also deleted
         return Object.values({ ...fieldsUpdates }).filter((item) => {
@@ -34,7 +42,9 @@ export default function SubmitChanges({
     }
 
     const storeLocalChangesInDb = async () => {
-        const body = getUpdates()
+        const updates = getUpdates()
+        const body = removeTemporaryIds(updates)
+        console.log('body', body)
         try {
             setInprogress(true)
             const response = await axios.post('/api/modify', body)
@@ -45,7 +55,7 @@ export default function SubmitChanges({
                     message: "successfully stored your changes!", showMessage: true
                 }))
                 const res = await mutate()
-                console.log('data from mutate \n', res)
+                // console.log('data from mutate \n', res)
                 // console.log('fresh data in block \n', res)
                 dispatch({ type: "submitChanges", payload: { ...res } })
 
