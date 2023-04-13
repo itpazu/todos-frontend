@@ -24,6 +24,7 @@ export const getStaticProps = async () => {
         fallback: {
           '/api/todos': { ...todoStatusDivider(data) }
         },
+        revalidate: 100
       }
     }
   } catch (error) {
