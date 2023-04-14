@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Paper, Grid } from '@mui/material';
 import { useGlobalContext, MovToDoesHandler, Todo } from '../context/globalContext';
 import TodoList from './TodoList';
@@ -6,11 +6,18 @@ import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
+import useFetchTodos from '../components/hooks/useTodos'
 
 export default function Todos() {
+    const { data, mutate } = useFetchTodos()
+
     const { dispatch, state } = useGlobalContext()
     const { todos, completedTodos } = state;
+    useEffect(() => {
+        mutate().then(data => dispatch({ type: "submitChanges", payload: { ...data } }))
 
+    }, []
+    )
     // cache of the original state - completed / pending per todo in the database
     const originalState = () => {
         return [...todos, ...completedTodos].reduce<Map<number, boolean>>((prevMap, current) => {
