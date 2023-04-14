@@ -31,7 +31,6 @@ export const getStaticProps = async () => {
     return {
       props: {
         InitialData: {
-
           todos: [],
           completedTodos: []
         }
