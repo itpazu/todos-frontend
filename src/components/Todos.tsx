@@ -13,11 +13,7 @@ export default function Todos() {
 
     const { dispatch, state } = useGlobalContext()
     const { todos, completedTodos } = state;
-    useEffect(() => {
-        mutate().then(data => dispatch({ type: "submitChanges", payload: { ...data } }))
 
-    }, []
-    )
     // cache of the original state - completed / pending per todo in the database
     const originalState = () => {
         return [...todos, ...completedTodos].reduce<Map<number, boolean>>((prevMap, current) => {
