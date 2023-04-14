@@ -21,7 +21,6 @@ export default function SubmitChanges({
     const [inProgress, setInprogress] = useState(false)
     const { data: asFreshTodos, mutate } = useFetchTodos()
 
-    console.log(state)
 
     const removeTemporaryIds = (changesArr: Array<Partial<Todo>>) => {
         return changesArr.map((item) => {
@@ -44,7 +43,6 @@ export default function SubmitChanges({
     const storeLocalChangesInDb = async () => {
         const updates = getUpdates()
         const body = removeTemporaryIds(updates)
-        console.log('body', body)
         try {
             setInprogress(true)
             const response = await axios.post('/api/modify', body)
@@ -55,8 +53,7 @@ export default function SubmitChanges({
                     message: "successfully stored your changes!", showMessage: true
                 }))
                 const res = await mutate()
-                // console.log('data from mutate \n', res)
-                // console.log('fresh data in block \n', res)
+
                 dispatch({ type: "submitChanges", payload: { ...res } })
 
 
