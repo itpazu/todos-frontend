@@ -134,7 +134,7 @@ export default function Todos() {
                     item
                     md={3}
                     xs={12}
-                    sx={{ minHeight: { xs: '40vh', md: '70vh' } }}
+                    sx={{ minHeight: { xs: '30vh', md: '60vh' } }}
                     onDrop={completedTodosDropHandler}
                     onDragOver={dragStartHandler}
                 >
@@ -150,7 +150,7 @@ export default function Todos() {
                 item
                 md={completedTodos.length > 0 ? 7 : 10}
                 xs={12}
-                sx={{ minHeight: { xs: '40vh', md: '70vh' } }}
+                sx={{ minHeight: { xs: '30vh', md: '60vh' } }}
                 onDrop={todosDropHandler}
                 onDragOver={dragStartHandler}
                 justifyContent="center" >
