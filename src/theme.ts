@@ -46,6 +46,13 @@ const theme = responsiveFontSizes(createTheme({
         }
 
       }
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          fontSize: '1.5rem'
+        }
+      }
     }
   }
 }))

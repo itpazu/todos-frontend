@@ -136,7 +136,7 @@ export default function Todos() {
 
             </Grid>
             <Grid item container spacing={2}
-                xs={12} minHeight="50vh">
+                xs={12} minHeight={{ xs: "40vh", md: '50vh' }}>
 
 
                 {completedTodos.length > 0 &&

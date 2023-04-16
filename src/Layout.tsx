@@ -15,13 +15,13 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
             justifyContent={'center'}
 
         >
-            <Grid item container minHeight='15vh'>
+            <Grid item container minHeight='10vh' >
 
-                <Grid item container xs={12} justifyContent={'center'} minHeight='5vh'>
+                <Grid item container xs={12} justifyContent={'center'} >
 
                     <Typography variant='h3'> U-ppTo-Do </Typography>
                 </Grid>
-                <Grid item container xs={12} justifyContent={'center'} minHeight='5vh'>
+                <Grid item container xs={12} justifyContent={'center'} >
                     <Typography
                         variant='body1'> Youve got to do what youve got to do. </Typography>
                 </Grid>

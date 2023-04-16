@@ -32,7 +32,7 @@ export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
         {/* Inject MUI styles first to match with the prepend: true configuration. */}
         {emotionStyleTags}
       </Head>
-      <body style={{ overflow: "scroll" }}>
+      <body >
         <Main />
         <NextScript />
       </body>

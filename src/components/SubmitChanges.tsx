@@ -79,7 +79,8 @@ export default function SubmitChanges({
             direction="row"
             spacing={2}
             width={'100%'}
-            minHeight={'90px'}
+            minHeight={'80px'}
+            maxHeight={'80px'}
             paddingTop={2}
             paddingBottom={2}
             justifyContent={{ xs: 'center', md: "flex-start" }}
@@ -107,7 +108,7 @@ export default function SubmitChanges({
                     })}>
 
                     <Alert sx={{
-                        height: "40vh",
+                        minHeight: "40vh",
                         width: {
                             xs: "80vw",
                             md: '40vw',
@@ -131,13 +132,14 @@ export default function SubmitChanges({
                                     setStoreStatus(prev => ({ ...prev, showMessage: false }))
 
                                 }}
+
                             >Got it</Button>
                         </Stack>
                     </Alert>
                 </Box>
             }
             <Button
-
+                sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}
                 color="secondary"
                 size="medium"
                 variant="contained"
@@ -147,7 +149,7 @@ export default function SubmitChanges({
                 submit changes
             </Button>
             <Button
-                sx={{ backgroundColor: "#e57373" }}
+                sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, backgroundColor: "#e57373" }}
                 size="medium"
                 variant="contained"
                 disabled={
