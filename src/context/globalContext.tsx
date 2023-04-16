@@ -1,5 +1,4 @@
 import React, { ReactNode, useReducer, createContext, useContext } from 'react';
-import { Key } from 'swr';
 
 type Action = { type: string, payload: DispatchPayload }
 
@@ -63,6 +62,7 @@ const globalReducer = (
             }
             return { ...newState }
         case "statusChanges":
+
             return {
                 ...state,
                 fieldsUpdates: {
@@ -96,6 +96,13 @@ const globalReducer = (
         case "discardLocalChanges":
         case "submitChanges":
             return { ...initialState, ...payload }
+        case "deleteNewTodo":
+            const fieldsUpdatesCopy = { ...state.fieldsUpdates }
+            delete fieldsUpdatesCopy[payload.deleted.id]
+            return {
+                ...state, ...payload.filteredTodos,
+                fieldsUpdates: { ...fieldsUpdatesCopy }
+            }
         case "deleteTodo":
             return {
                 ...state, ...payload.filteredTodos,

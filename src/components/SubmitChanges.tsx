@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Button, Stack, Grid } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { useGlobalContext, Todo } from "../context/globalContext";
 import useFetchTodos from './hooks/useTodos';
 import Loader from './Loader';
@@ -21,7 +21,6 @@ export default function SubmitChanges({
     const [inProgress, setInprogress] = useState(false)
     const { data: asFreshTodos, mutate } = useFetchTodos()
 
-    console.log(state)
     const removeTemporaryIds = (changesArr: Array<Partial<Todo>>) => {
         return changesArr.map((item) => {
             const fallbackId = item?.id ?? -1
@@ -31,18 +30,9 @@ export default function SubmitChanges({
             return item
         })
     }
-    const getUpdates = () => {
-        // deleteing new items which has been also deleted
-        return Object.values({ ...fieldsUpdates }).filter((item) => {
-            const fallbackId = item?.id ?? 1
-            return !(item.description === "delete" && fallbackId <= 0)
-        })
-
-    }
 
     const storeLocalChangesInDb = async () => {
-        const updates = getUpdates()
-        const body = removeTemporaryIds(updates)
+        const body = removeTemporaryIds(Object.values({ ...fieldsUpdates }))
         try {
             setInprogress(true)
             const response = await axios.post('/api/modify', body)

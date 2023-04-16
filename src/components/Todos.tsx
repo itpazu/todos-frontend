@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Paper, Grid } from '@mui/material';
 import { useGlobalContext, MovToDoesHandler, Todo } from '../context/globalContext';
 import TodoList from './TodoList';
@@ -20,30 +20,30 @@ export default function Todos() {
     }, []
     )
     // cache of the original state - completed / pending per todo in the database
-    const originalState = () => {
+    const originalState = useMemo(() => {
         return [...todos, ...completedTodos].reduce<Map<number, boolean>>((prevMap, current) => {
             return prevMap.set(current.id, current.completed)
         }, new Map)
-    }
+    }, [data])
     // cache the original order of todos
-    const originaOrderTodos = () => todos.map(({ id }) => id)
-    const originaOrderCompletedTodos = () => completedTodos.map(({ id }) => id)
+    const originaOrderTodos = useMemo(() => data?.todos.map(({ id }) => id), [data])
+    const originaOrderCompletedTodos = useMemo(() => data?.completedTodos.map(({ id }) => id), [data])
 
     // evaluates the difference between original order of todos and the current order
     // returns a boolean to enable submit button if todos order changed
-    const evaluateCurrentOrder = (originalOrder: number[], curentOrder: Todo[]) => {
+    const evaluateCurrentOrder = (originalOrder: number[] = [], curentOrder: Todo[] = []) => {
         return originalOrder.some((val, idx) => !(val === curentOrder[idx]?.id))
     }
     const areTodosReordered = () => {
-        const reorderedTodos = evaluateCurrentOrder(originaOrderTodos(), todos)
-        const reorderedCompletedTodos = evaluateCurrentOrder(originaOrderCompletedTodos(), completedTodos)
+        const reorderedTodos = evaluateCurrentOrder(originaOrderTodos, todos)
+        const reorderedCompletedTodos = evaluateCurrentOrder(originaOrderCompletedTodos, completedTodos)
         return reorderedTodos || reorderedCompletedTodos
 
     }
 
     const updateStatusIfChanged = (id: number, newStatus: boolean) => {
         let Dispatchpayload;
-        if ((originalState().get(id) === newStatus)) {
+        if ((originalState.get(id) === newStatus)) {
             Dispatchpayload = {
                 type: "removeStatusChange", payload: {
                     id

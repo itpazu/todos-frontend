@@ -52,14 +52,22 @@ export default function TodoList({ todos, moveToDoes }: {
         const localListCopy = [...state[currentList]]
         let deleted = localListCopy.splice(idx, 1)
         const deletedId = deleted[0].id
+        let type = "deleteNewTodo"
+        let payloadData: { id: number, description?: string } = {
+            id: deletedId,
+        }
+        if (deletedId > 0) {
+            type = "deleteTodo"
+            payloadData = { ...payloadData, description: "delete" }
+        }
+
         dispatch({
-            type: "deleteTodo", payload: {
+            type, payload: {
                 filteredTodos: {
                     [currentList]: localListCopy
                 },
                 deleted: {
-                    id: deletedId,
-                    description: "delete"
+                    ...payloadData
                 }
             }
         })

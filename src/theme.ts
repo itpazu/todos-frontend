@@ -33,7 +33,18 @@ const theme = responsiveFontSizes(createTheme({
     MuiTextField: {
       styleOverrides: {
         root: {
-          '& .Mui-selected': { color: '#bcaaa4', opacity: 1 }
+          '& .Mui-selected': { color: '#bcaaa4', opacity: 1 },
+          "& .MuiOutlinedInput-root": {
+            "&.Mui-focused fieldset": {
+              borderColor: '#14a37f'
+            }
+          },
+          "& label.Mui-focused": {
+            color: '#14a37f'
+          },
+          "& .MuiInput-underline:after": {
+            borderBottomColor: '#14a37f'
+          },
         }
       }
     },

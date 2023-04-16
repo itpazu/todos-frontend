@@ -1,9 +1,9 @@
 import { Todo } from '../context/globalContext'
 
-// const SERVER_URL = 'http://localhost:8000/'
-const SERVER_URL = 'https://drag-n-drop-sandy.vercel.app/'
+const SERVER_URL_PRODUCTION = process.env.NEXT_PUBLIC_SERVER_URL
+// const SERVER_URL_DEV = 'http://localhost:8000/'
 
-
+console.log(process.env.NEXT_PUBLIC_SERVER_URL)
 type BasicHeadersArgs = { name: string, password: string }
 export const createBasicHeaders = ({ name, password }: BasicHeadersArgs) => {
     let headers = new Headers
@@ -24,7 +24,7 @@ export const fetcher = ({
     credentials,
     method = "GET" }: FetcherArgs) => {
     const headers = createBasicHeaders(credentials)
-    return fetch(`${SERVER_URL}${endpoint}`, {
+    return fetch(`${SERVER_URL_PRODUCTION}${endpoint}`, {
         method,
         headers,
         body: JSON.stringify(body)
