@@ -11,7 +11,7 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
             spacing={1}
             padding={2}
             columns={{ xs: 12, md: 10 }}
-            sx={theme => ({ minHeight: '100vh', backgroundColor: theme.palette.primary.main })}
+            sx={theme => ({ minHeight: { xs: '95vh', sm: '100vh' }, backgroundColor: theme.palette.primary.main })}
             justifyContent={'center'}
 
         >

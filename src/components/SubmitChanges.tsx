@@ -102,7 +102,7 @@ export default function SubmitChanges({
                         width: '100vw',
                         display: 'flex',
                         justifyContent: 'center',
-                        alignItems: 'center',
+                        alignItems: 'flex-start',
                         zIndex: theme.zIndex.drawer + 1,
                         '&.MuiBox-root': { 'ml': '0px' }
                     })}>
@@ -150,6 +150,7 @@ export default function SubmitChanges({
             </Button>
             <Button
                 sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, backgroundColor: "#e57373" }}
+
                 size="medium"
                 variant="contained"
                 disabled={
