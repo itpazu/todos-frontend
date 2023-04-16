@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, Grid } from "@mui/material";
 import { useGlobalContext, Todo } from "../context/globalContext";
 import useFetchTodos from './hooks/useTodos';
 import Loader from './Loader';
@@ -21,7 +21,7 @@ export default function SubmitChanges({
     const [inProgress, setInprogress] = useState(false)
     const { data: asFreshTodos, mutate } = useFetchTodos()
 
-
+    console.log(state)
     const removeTemporaryIds = (changesArr: Array<Partial<Todo>>) => {
         return changesArr.map((item) => {
             const fallbackId = item?.id ?? -1
@@ -78,8 +78,12 @@ export default function SubmitChanges({
         <Stack
             direction="row"
             spacing={2}
-            padding={2}
-            sx={{ height: "100%" }}
+            width={'100%'}
+            minHeight={'90px'}
+            paddingTop={2}
+            paddingBottom={2}
+            justifyContent={{ xs: 'center', md: "flex-start" }}
+            sx={{ height: "fit-content" }}
 
         >
             <Loader open={inProgress} />
@@ -134,7 +138,6 @@ export default function SubmitChanges({
             }
             <Button
 
-                sx={{ height: '100%', }}
                 color="secondary"
                 size="medium"
                 variant="contained"

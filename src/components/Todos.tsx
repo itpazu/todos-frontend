@@ -113,54 +113,64 @@ export default function Todos() {
 
     return (
         < >
-            <Grid
-                item
-                md={3}
-                xs={12}
-                padding={3}
-            >
-                <SubmitChanges
-                    areReordered={areTodosReordered()}
-                />
-            </Grid>
-            <Grid item justifyContent={'center'}
-                md={7}
-                xs={12}>
-                <AddToDo />
-            </Grid>
+            <Grid container minHeight={'15vh'} justifyContent="space-between" alignItems={"center"}
+                sx={theme => ({ position: 'sticky', top: 0, background: theme.palette.primary.main, zIndex: theme.zIndex.drawer + 1 })}
 
-            {completedTodos.length > 0 &&
+            >
                 <Grid
                     item
-                    md={3}
+                    md={4}
                     xs={12}
-                    sx={{ minHeight: { xs: '30vh', md: '60vh' } }}
-                    onDrop={completedTodosDropHandler}
-                    onDragOver={dragStartHandler}
                 >
-                    <Paper sx={{ height: '100%', padding: 2, backgroundColor: "#aed581" }}>
+                    <SubmitChanges
+                        areReordered={areTodosReordered()}
+                    />
+                </Grid>
+                <Grid item
+                    md={8}
+                    xs={12}
+                >
+                    <AddToDo />
+
+                </Grid>
+
+            </Grid>
+            <Grid item container spacing={2}
+                xs={12} minHeight="50vh">
+
+
+                {completedTodos.length > 0 &&
+                    <Grid
+                        item
+                        md={4}
+                        xs={12}
+                        onDrop={completedTodosDropHandler}
+                        onDragOver={dragStartHandler}
+                    >
+                        <Paper sx={{ height: '100%', padding: 2, backgroundColor: "#aed581" }}>
+                            <Stack justifyContent={'center'} direction={"row"} marginBottom={"10px"}>
+                                <Typography variant="h6"> DID </Typography>
+                            </Stack>
+                            <TodoList todos={completedTodos} moveToDoes={moveTodoHandler} />
+
+                        </Paper>
+                    </Grid>}
+                <Grid
+                    item
+                    md={completedTodos.length > 0 ? 8 : 12}
+                    xs={12}
+                    // sx={{ minHeight: { xs: '30vh', md: '60vh' } }}
+                    onDrop={todosDropHandler}
+                    onDragOver={dragStartHandler}
+                    justifyContent="center" >
+                    <Paper id="source" sx={{ height: '100%', padding: 2, backgroundColor: "#e57373" }} >
                         <Stack justifyContent={'center'} direction={"row"} marginBottom={"10px"}>
-                            <Typography variant="h6"> DID </Typography>
+                            <Typography variant="h6"> DO </Typography>
                         </Stack>
-                        <TodoList todos={completedTodos} moveToDoes={moveTodoHandler} />
 
+                        <TodoList todos={todos} moveToDoes={moveTodoHandler} />
                     </Paper>
-                </Grid>}
-            <Grid
-                item
-                md={completedTodos.length > 0 ? 7 : 10}
-                xs={12}
-                sx={{ minHeight: { xs: '30vh', md: '60vh' } }}
-                onDrop={todosDropHandler}
-                onDragOver={dragStartHandler}
-                justifyContent="center" >
-                <Paper id="source" sx={{ height: '100%', padding: 2, backgroundColor: "#e57373" }} >
-                    <Stack justifyContent={'center'} direction={"row"} marginBottom={"10px"}>
-                        <Typography variant="h6"> DO </Typography>
-                    </Stack>
-
-                    <TodoList todos={todos} moveToDoes={moveTodoHandler} />
-                </Paper>
+                </Grid>
             </Grid>
 
         </>
