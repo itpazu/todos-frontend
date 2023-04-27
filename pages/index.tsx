@@ -1,61 +1,31 @@
 
-import React from 'react';
-import { TodosFromProps, Todo } from '../src/context/globalContext';
-import { todoStatusDivider, fetcher as todoFetcher } from '../src/lib/utils';
-import { SWRConfig } from 'swr';
-import TodosContext from '../src/components/TodosContext';
+import React, { ReactElement, useEffect } from 'react';
+import Todos from '../src/components/Todos';
+import Layout from '../src/layouts/Layout';
+import type { NextPageWithLayout } from './_app'
+import useUser from '../src/components/hooks/useUser';
 
-const ENDPOINT = 'todos'
+const initialData = { todos: [], completedTodos: [] }
 
-export const getStaticProps = async () => {
-  const userName = process.env.USERNAME
-  const password = process.env.PASSWORD
-  try {
-    const response = await todoFetcher({
-      endpoint: ENDPOINT, credentials: {
-        name: userName || '',
-        password: password || ''
-      },
-    })
-    const data = await response.json()
-    return {
-      props: {
+const TodoMain: NextPageWithLayout = () => {
+  useUser({ redirectIfFound: true, redirectTo: 'users/' })
 
-        fallback: {
-          '/api/todos': { ...todoStatusDivider(data) }
-        },
-        revalidate: 60
-      }
-    }
-  } catch (error) {
-    return {
-      props: {
-        InitialData: {
-          todos: [],
-          completedTodos: []
-        }
-
-      },
-    };
-  }
-
-};
-export default function TodoMain({ fallback }: { fallback: TodosFromProps }) {
   return (
-    <SWRConfig value={{
-      fallback,
-      // refreshInterval: 10000,
-      onErrorRetry: (error, key, _, revalidate, { retryCount }) => {
-        if (error.status === 404) return
+    <>
 
-        if (retryCount >= 5) return
+      <Todos data={initialData} />
 
-        setTimeout(() => revalidate({ retryCount }), 5000)
-      }
-    }}>
-      <TodosContext />
-    </SWRConfig>
-
+    </>
 
   );
 }
+
+TodoMain.getLayout = function getLayout(page: ReactElement) {
+  return (
+    <Layout>
+      {page}
+    </Layout>
+  )
+}
+
+export default TodoMain;

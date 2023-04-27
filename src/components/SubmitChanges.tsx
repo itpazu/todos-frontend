@@ -35,7 +35,7 @@ export default function SubmitChanges({
         const body = removeTemporaryIds(Object.values({ ...fieldsUpdates }))
         try {
             setInprogress(true)
-            const response = await axios.post('/api/modify', body)
+            const response = await axios.post('/api/todos/modify', body)
             setInprogress(false)
             if (response.status === 200) {
                 setStoreStatus(prev => ({

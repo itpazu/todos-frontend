@@ -1,6 +1,6 @@
 import { NextApiResponse, NextApiRequest } from 'next'
-import { fetcher } from '../../src/lib/utils';
-import { TodosFromProps } from '../../src/context/globalContext';
+import { fetcher } from '../../../src/lib/utils';
+import { TodosFromProps } from '../../../src/context/globalContext';
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<TodosFromProps>) {
@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         let response = await fetcher({
             endpoint: 'modify', method: "PUT",
             body, credentials: {
-                name: userName || '',
+                username: userName || '',
                 password: password || ''
             },
         })

@@ -1,30 +1,39 @@
 import { Todo } from '../context/globalContext'
 
-const SERVER_URL_PRODUCTION = process.env.NEXT_PUBLIC_SERVER_URL
-// const SERVER_URL_DEV = 'http://localhost:8000/'
+// const SERVER_URL_PRODUCTION = process.env.NEXT_PUBLIC_SERVER_URL
+const SERVER_URL_PRODUCTION = 'http://localhost:8000/'
 
-console.log(process.env.NEXT_PUBLIC_SERVER_URL)
-type BasicHeadersArgs = { name: string, password: string }
-export const createBasicHeaders = ({ name, password }: BasicHeadersArgs) => {
-    let headers = new Headers
-    headers.set('Authorization', 'Basic ' + Buffer.from(name + ':' + password).toString('base64'))
+type BasicHeadersArgs = { username: string, password: string }
+
+export const createBasicAuthHeaders = ({ username, password }: BasicHeadersArgs) => {
+    let headers = new Headers()
+    headers.set('Authorization', 'Basic ' + Buffer.from(username + ':' + password).toString('base64'))
+    headers.set('Content-Type', 'application/json')
+    return headers
+}
+const createTokenHeader = (token: string) => {
+    let headers = new Headers()
+    headers.set('Authorization', token)
     headers.set('Content-Type', 'application/json')
     return headers
 }
 
+
 type FetcherArgs = {
-    endpoint: string,
+    endpoint: string
     method?: string
     body?: {}
-    credentials: { name: string, password: string }
+    host?: string
+    credentials: BasicHeadersArgs | string
 }
 export const fetcher = ({
     endpoint,
     body,
+    host = SERVER_URL_PRODUCTION,
     credentials,
     method = "GET" }: FetcherArgs) => {
-    const headers = createBasicHeaders(credentials)
-    return fetch(`${SERVER_URL_PRODUCTION}${endpoint}`, {
+    const headers = typeof credentials === 'object' ? createBasicAuthHeaders(credentials) : createTokenHeader(credentials)
+    return fetch(`${host}` + `${endpoint}`, {
         method,
         headers,
         body: JSON.stringify(body)
@@ -78,7 +87,8 @@ export const validate = (type: string, input: string) => {
 
 export const HELPER_TEXT: { [key: string]: string } = {
     title: 'at least 2 character long, must contain character/numbers',
-    description: 'please insert a description of at least 10 letters long'
+    description: 'please insert a description of at least 10 letters long',
+    userName: "invalid user name. must contain only letters"
 
 }
 

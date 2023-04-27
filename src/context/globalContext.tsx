@@ -1,5 +1,12 @@
 import React, { ReactNode, useReducer, createContext, useContext } from 'react';
 
+
+export type User = {
+    isLoggedIn: boolean
+    token: string
+    user: { username: string }
+}
+
 type Action = { type: string, payload: DispatchPayload }
 
 export type Todo = {
@@ -126,9 +133,9 @@ export const GlobalContext = createContext<{ state: State, dispatch: React.Dispa
 });
 
 
-export const GlobalContextProvider = ({ children, FetchState }: {
+export const GlobalContextProvider = ({ children, FetchState = {} }: {
     children: ReactNode,
-    FetchState: Partial<State>
+    FetchState?: Partial<State>
 }) => {
     const [state, dispatch] = useReducer(globalReducer, { ...initialState, ...FetchState });
     return (
