@@ -12,7 +12,7 @@ import { AppType } from 'next/app';
 import { ServerStyleSheets as JSSServerStyleSheets } from '@mui/styles';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
-import { MyAppProps } from './_app';
+import { AppPropsWithLayout } from './_app';
 
 interface MyDocumentProps extends DocumentProps {
   emotionStyleTags: JSX.Element[];
@@ -95,7 +95,7 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
 
   ctx.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (App: React.ComponentType<React.ComponentProps<AppType> & MyAppProps>) =>
+      enhanceApp: (App: React.ComponentType<React.ComponentProps<AppType> & AppPropsWithLayout>) =>
         function EnhanceApp(props) {
           return jssSheets.collect(<App emotionCache={cache} {...props} />);
         },

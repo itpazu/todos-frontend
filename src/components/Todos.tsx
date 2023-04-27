@@ -1,34 +1,32 @@
-import React, { useEffect, useMemo } from 'react';
-import { Paper, Grid } from '@mui/material';
-import { useGlobalContext, MovToDoesHandler, Todo } from '../context/globalContext';
+import React, { useMemo } from 'react';
+import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
+import Skeleton from '@mui/material/Skeleton';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import TodoList from './TodoList';
 import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import useFetchTodos from '../components/hooks/useTodos'
+import { TodosFromProps, MovToDoesHandler, Todo, useGlobalContext } from '../context/globalContext';
 
-export default function Todos() {
-    const { data, mutate } = useFetchTodos()
-
+export default function Todos({ data, isLoading = false }:
+    {
+        data: TodosFromProps
+        isLoading?: boolean
+    }
+) {
     const { dispatch, state } = useGlobalContext()
     const { todos, completedTodos } = state;
-    useEffect(() => {
-        mutate().then(res => dispatch({ type: "submitChanges", payload: { ...res } })
-        )
 
-    }, []
-    )
     // cache of the original state - completed / pending per todo in the database
     const originalState = useMemo(() => {
-        return [...todos, ...completedTodos].reduce<Map<number, boolean>>((prevMap, current) => {
+        return [...data.todos, ...data.completedTodos].reduce<Map<number, boolean>>((prevMap, current) => {
             return prevMap.set(current.id, current.completed)
         }, new Map)
     }, [data])
     // cache the original order of todos
     const originaOrderTodos = useMemo(() => data?.todos.map(({ id }) => id), [data])
     const originaOrderCompletedTodos = useMemo(() => data?.completedTodos.map(({ id }) => id), [data])
-
     // evaluates the difference between original order of todos and the current order
     // returns a boolean to enable submit button if todos order changed
     const evaluateCurrentOrder = (originalOrder: number[] = [], curentOrder: Todo[] = []) => {
@@ -139,27 +137,39 @@ export default function Todos() {
                 xs={12} minHeight={{ xs: "40vh", md: '50vh' }}>
 
 
-                {completedTodos.length > 0 &&
-                    <Grid
-                        item
-                        md={4}
-                        xs={12}
-                        onDrop={completedTodosDropHandler}
-                        onDragOver={dragStartHandler}
-                    >
-                        <Paper sx={{ height: '100%', padding: 2, backgroundColor: "#aed581" }}>
-                            <Stack justifyContent={'center'} direction={"row"} marginBottom={"10px"}>
-                                <Typography variant="h6"> DID </Typography>
-                            </Stack>
-                            <TodoList todos={completedTodos} moveToDoes={moveTodoHandler} />
-
-                        </Paper>
-                    </Grid>}
                 <Grid
                     item
-                    md={completedTodos.length > 0 ? 8 : 12}
+                    md={4}
                     xs={12}
-                    // sx={{ minHeight: { xs: '30vh', md: '60vh' } }}
+                    onDrop={completedTodosDropHandler}
+                    onDragOver={dragStartHandler}
+                >
+                    <Paper sx={{ height: '100%', padding: 2, backgroundColor: "#aed581" }}>
+                        <Stack justifyContent={'center'} direction={"row"} marginBottom={"10px"}>
+                            <Typography variant="h6"> DID </Typography>
+                        </Stack>
+                        <Stack spacing={0.5}>
+                            {isLoading ?
+
+                                new Array(3).fill(0).map((_, idx) => <Skeleton
+                                    key={idx}
+                                    variant='rectangular'
+                                    sx={{ bgcolor: "#e0e0e0" }}
+                                    height={70}
+                                    animation="wave"
+                                />)
+
+                                :
+                                <TodoList todos={completedTodos} moveToDoes={moveTodoHandler} />
+                            }
+                        </Stack>
+
+                    </Paper>
+                </Grid>
+                <Grid
+                    item
+                    md={8}
+                    xs={12}
                     onDrop={todosDropHandler}
                     onDragOver={dragStartHandler}
                     justifyContent="center" >
@@ -168,7 +178,21 @@ export default function Todos() {
                             <Typography variant="h6"> DO </Typography>
                         </Stack>
 
-                        <TodoList todos={todos} moveToDoes={moveTodoHandler} />
+                        <Stack spacing={0.5}>
+                            {isLoading ?
+
+                                new Array(3).fill(0).map((_, idx) => <Skeleton
+                                    key={idx}
+                                    variant='rectangular'
+                                    sx={{ bgcolor: "#e0e0e0" }}
+                                    height={70}
+                                    animation="wave"
+                                />)
+
+                                :
+                                <TodoList todos={todos} moveToDoes={moveTodoHandler} />
+                            }
+                        </Stack>
                     </Paper>
                 </Grid>
             </Grid>

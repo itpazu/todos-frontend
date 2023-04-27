@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { ReactNode, ReactElement } from 'react';
 import Head from 'next/head';
 import { AppProps } from 'next/app';
 import { ThemeProvider } from '@mui/material/styles';
@@ -6,16 +6,30 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
-import Layout from '../src/Layout';
+import Layout from '../src/layouts/Layout';
+import type { NextPage } from 'next'
+import { SWRConfig } from 'swr';
+import { GlobalContextProvider } from '../src/context/globalContext';
+import axios from 'axios'
+const initialData = { todos: [], completedTodos: [] }
 
 const clientSideEmotionCache = createEmotionCache();
 
-export interface MyAppProps extends AppProps {
-  emotionCache?: EmotionCache;
+
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode
 }
 
-export default function MyApp(props: MyAppProps) {
+export type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout
+  emotionCache?: EmotionCache;
+
+}
+
+export default function MyApp(props: AppPropsWithLayout) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  const getLayout = Component.getLayout ?? ((page) => page)
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -31,12 +45,26 @@ export default function MyApp(props: MyAppProps) {
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
+        <SWRConfig value={{
+          fallback: initialData,
+          // refreshInterval: 10000,
+          fetcher: (url: string) => axios.get(url).then(res => res.data),
+          onErrorRetry: (error, _1, _2, revalidate, { retryCount }) => {
+            if (error.status === 404 || error.status === 401) return
 
-        <Layout>
-          <Component {...pageProps} />
+            if (retryCount >= 5) return
 
-        </Layout>
+            setTimeout(() => revalidate({ retryCount }), 5000)
+          }
+        }}>
+          <GlobalContextProvider >
+
+            <CssBaseline />
+
+            {getLayout(<Component {...pageProps} />)}
+          </GlobalContextProvider>
+        </SWRConfig>
+
       </ThemeProvider>
     </CacheProvider>
   );

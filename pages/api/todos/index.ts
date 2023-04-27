@@ -4,20 +4,18 @@ import { TodosFromProps } from '../../../src/context/globalContext';
 
 const ENDPOINT = 'todos'
 
-export default async function handler(_: NextApiRequest, res: NextApiResponse<TodosFromProps>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<TodosFromProps>) {
     const userName = process.env.USERNAME
     const password = process.env.PASSWORD
+    const token = req.session.user?.token ?? ''
     let data;
     try {
 
         const response = await fetcher({
-            endpoint: ENDPOINT, credentials: {
-                name: userName || '',
-                password: password || ''
-            },
+            endpoint: ENDPOINT, credentials: token,
         })
         data = await response.json()
-        if (response.status === 200) {
+        if (response.ok) {
             res.status(response.status).json(todoStatusDivider(data))
 
         }
