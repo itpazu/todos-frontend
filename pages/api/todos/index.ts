@@ -1,32 +1,42 @@
 import { NextApiResponse, NextApiRequest } from 'next'
 import { todoStatusDivider, fetcher } from '../../../src/lib/utils';
 import { TodosFromProps } from '../../../src/context/globalContext';
+import { withIronSessionApiRoute } from 'iron-session/next';
+import { sessionOptions } from '../../../src/lib/session';
+import { FetchError } from '../../../src/lib/fetchError';
 
 const ENDPOINT = 'todos'
+type ErrorData = { detail: string }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<TodosFromProps>) {
-    const userName = process.env.USERNAME
-    const password = process.env.PASSWORD
+async function handler(req: NextApiRequest, res:
+    NextApiResponse) {
+
     const token = req.session.user?.token ?? ''
-    let data;
     try {
 
         const response = await fetcher({
-            endpoint: ENDPOINT, credentials: token,
+            endpoint: ENDPOINT, credentials: `Bearer ${token}`,
         })
-        data = await response.json()
+        const data = await response.json()
         if (response.ok) {
-            res.status(response.status).json(todoStatusDivider(data))
+            return res.status(response.status).json(todoStatusDivider(data))
 
         }
-        else {
+        throw new FetchError({
+            message: response.statusText,
+            data: data as ErrorData,
+            response
+        })
 
-            res.status(response.status).json(data)
-        }
     } catch (error) {
 
-        return { todos: [], completedTodos: [] }
+        res.status((error instanceof FetchError) ? error.response?.status : 500).json({
+            message: (error as Error | FetchError).message ?? "server faild",
+            ...(error instanceof FetchError) && error.data,
+            isLoggedIn: false,
+        })
     }
 
 
 }
+export default withIronSessionApiRoute(handler, sessionOptions)

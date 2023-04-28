@@ -5,12 +5,26 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Layout from '../src/layouts/Layout';
 import Button from '@mui/material/Button';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { validate, HELPER_TEXT, fetcher } from '../src/lib/utils';
+import useUser from '../src/components/hooks/useUser';
 
 export default function Login() {
 
     const [input, setInput] = useState({ username: '', password: '' })
+    const [showPassword, setShowPassword] = useState(false);
+    const { mutateUser } = useUser(
+        {
+            redirectIfFound: true,
+            redirectTo: 'users/',
+        })
 
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    // console.log(error)
     const onInput: React.ChangeEventHandler<HTMLInputElement> =
         ({ currentTarget: { name, value } }) => {
             setInput(prev => ({
@@ -27,11 +41,18 @@ export default function Login() {
             credentials: input
 
         })
-            .then(res => res.json())
-            .then(data => console.log(data))
+            .then(res => {
+                if (res.ok) return mutateUser()
+                return res.json()
+
+            })
+            .then(data => {
+                console.log(data)
+                // mutateUser()
+
+            })
+            .catch(err => console.log(err))
     }
-    // console.log(input.username.length > 1 && /^[a-z|A-Z|1-9\s]*$/.test(input.username))
-    console.log(!validate("name", input.username) || input.username.length === 0 || input.password.length === 0)
     return (
         <Box
             component="form"
@@ -55,10 +76,24 @@ export default function Login() {
                 <TextField
                     onChange={onInput}
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={input.password}
                     label="Password"
                     autoComplete='off'
+                    InputProps={{
+                        endAdornment:
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    // onMouseUp={handleMouseDownPassword}
+                                    edge="end"
+                                >
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                    }}
+
                 />
                 <Button
                     size="large"

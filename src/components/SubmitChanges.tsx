@@ -19,7 +19,7 @@ export default function SubmitChanges({
     const { fieldsUpdates } = state;
     const [storeStatus, setStoreStatus] = useState({ error: false, message: '', showMessage: false })
     const [inProgress, setInprogress] = useState(false)
-    const { data: asFreshTodos, mutate } = useFetchTodos()
+    const { data: asFreshTodos, mutate } = useFetchTodos(true)
 
     const removeTemporaryIds = (changesArr: Array<Partial<Todo>>) => {
         return changesArr.map((item) => {

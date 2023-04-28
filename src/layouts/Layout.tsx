@@ -19,7 +19,7 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
 
                 <Grid item container xs={12} justifyContent={'center'} >
 
-                    <Typography variant='h3'> U-ppTo-Do </Typography>
+                    <Typography variant='h3'> Upp-To-Do </Typography>
                 </Grid>
                 <Grid item container xs={12} justifyContent={'center'} >
                     <Typography
