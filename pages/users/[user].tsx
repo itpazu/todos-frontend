@@ -6,15 +6,14 @@ import type { NextPageWithLayout } from '../_app'
 import useFetchTodos from '../../src/components/hooks/useTodos'
 import { useGlobalContext } from '../../src/context/globalContext';
 import useUser from '../../src/components/hooks/useUser';
-import useSWR from 'swr'
 
 const initialData = { todos: [], completedTodos: [] }
 
 const TodoMain: NextPageWithLayout = () => {
-    const { user, mutateUser, } = useUser()
-    console.log(user)
-    const { data, isLoading } = useFetchTodos(false)
+    const { user } = useUser({ key: "../api/auth/user", redirectTo: '/' })
+    const { data, isLoading } = useFetchTodos(!!user?.isLoggedIn)
     const { dispatch } = useGlobalContext()
+    console.log('data', data)
 
     useEffect(() => {
         dispatch({ type: "submitChanges", payload: { ...data } })

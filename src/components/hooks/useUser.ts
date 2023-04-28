@@ -5,9 +5,9 @@ import useSWR from 'swr'
 export default function useUser({
     redirectTo = '',
     redirectIfFound = false,
+    key = 'api/auth/user'
 } = {}) {
-    const { data: user, mutate: mutateUser, error } = useSWR('api/auth/user')
-
+    const { data: user, mutate: mutateUser, error } = useSWR(key)
     useEffect(() => {
         // if no redirect needed, just return (example: already on /dashboard)
         // if user data not yet there (fetch in progress, logged in or not) then don't do anything yet
@@ -19,9 +19,10 @@ export default function useUser({
             // If redirectIfFound is also set, redirect if the user was found
             (redirectIfFound && user?.isLoggedIn)
         ) {
-            Router.push(`${redirectTo}${encodeURIComponent(user.username)}`)
+            Router.push(`${redirectTo}` +
+                `${user.isLoggedIn ? encodeURIComponent(user.username) : ''}`)
         }
-    }, [user, redirectIfFound, redirectTo])
+    }, [user, redirectIfFound, redirectTo, error])
 
-    return { user, mutateUser }
+    return { user, mutateUser, error }
 }

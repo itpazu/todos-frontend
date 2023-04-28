@@ -50,7 +50,7 @@ export default function MyApp(props: AppPropsWithLayout) {
           // refreshInterval: 10000,
           fetcher: (url: string) => axios.get(url).then(res => res.data),
           onErrorRetry: (error, _1, _2, revalidate, { retryCount }) => {
-            if (error.status === 404 || error.status === 401) return
+            if (error.response.status === 404 || error.response.status === 401) return
 
             if (retryCount >= 5) return
 

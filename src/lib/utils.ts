@@ -12,6 +12,7 @@ export const createBasicAuthHeaders = ({ username, password }: BasicHeadersArgs)
     return headers
 }
 const createTokenHeader = (token: string) => {
+    // console.log('token', token)
     let headers = new Headers()
     headers.set('Authorization', token)
     headers.set('Content-Type', 'application/json')

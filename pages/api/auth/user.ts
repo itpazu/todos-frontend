@@ -1,37 +1,38 @@
 import { NextApiResponse, NextApiRequest } from 'next'
+import { withIronSessionApiRoute } from 'iron-session/next'
+import { sessionOptions } from '../../../src/lib/session'
 import { fetcher } from '../../../src/lib/utils';
 import { User } from '../../../src/context/globalContext'
-import { FetchError } from '../../../src/lib/fetchError';
+import { FetchError, ErrorData } from '../../../src/lib/fetchError';
 
-type ErrorData = { detail: string }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
     const token = req.session?.user?.token ?? ''
-    if (!token) {
-        return res.status(401).end()
-    }
     try {
+        if (!token) {
+            throw new Error('credentials are missing')
+        }
 
         let response = await fetcher({
             endpoint: 'api/auth/user',
-            credentials: token as string,
+            credentials: `Bearer ${token}`,
         })
         const data: User | ErrorData = await response.json()
         if (response.ok) {
-            res.json({
+            return res.json({
                 ...data,
                 isLoggedIn: true,
             })
         }
-        else {
-            throw new FetchError({
-                message: response.statusText,
-                data: data as ErrorData,
-                response
-            })
-        }
+
+        throw new FetchError({
+            message: response.statusText,
+            data: data as ErrorData,
+            response
+        })
+
     } catch (error) {
-        res.status((error instanceof FetchError) ? error.response?.status : 500).json({
+        res.json({
             message: (error as Error | FetchError).message ?? "server faild",
             ...(error instanceof FetchError) && error.data,
             isLoggedIn: false,
@@ -40,3 +41,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 
 }
+export default withIronSessionApiRoute(handler, sessionOptions)

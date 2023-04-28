@@ -28,3 +28,4 @@ export class FetchError extends Error {
         this.data = data ?? { detail: message }
     }
 }
+export type ErrorData = { detail: string }
