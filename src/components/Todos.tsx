@@ -40,15 +40,15 @@ export default function Todos({ data, isLoading = false }:
     }
 
     const updateStatusIfChanged = (id: number, newStatus: boolean) => {
-        let Dispatchpayload;
+        let dispatchPayload;
         if ((originalState.get(id) === newStatus)) {
-            Dispatchpayload = {
+            dispatchPayload = {
                 type: "removeStatusChange", payload: {
                     id
                 }
             }
         } else {
-            Dispatchpayload = {
+            dispatchPayload = {
                 type: "statusChanges",
                 payload: {
                     id,
@@ -63,7 +63,7 @@ export default function Todos({ data, isLoading = false }:
 
             }
         }
-        dispatch(Dispatchpayload)
+        dispatch(dispatchPayload)
     }
     const moveTodoHandler: MovToDoesHandler = (moveFromArr, moveToArr, idx) => {
         const constTodoToEdit = { ...state[moveFromArr][idx] }
@@ -144,7 +144,7 @@ export default function Todos({ data, isLoading = false }:
                     onDrop={completedTodosDropHandler}
                     onDragOver={dragStartHandler}
                 >
-                    <Paper sx={{ height: '100%', padding: 2, backgroundColor: "#aed581" }}>
+                    <Paper sx={{ height: '100%', padding: 2, backgroundColor: theme => theme.palette.secondary.main }} >
                         <Stack justifyContent={'center'} direction={"row"} marginBottom={"10px"}>
                             <Typography variant="h6"> DID </Typography>
                         </Stack>
@@ -173,7 +173,7 @@ export default function Todos({ data, isLoading = false }:
                     onDrop={todosDropHandler}
                     onDragOver={dragStartHandler}
                     justifyContent="center" >
-                    <Paper id="source" sx={{ height: '100%', padding: 2, backgroundColor: "#e57373" }} >
+                    <Paper id="source" sx={{ height: '100%', padding: 2, backgroundColor: theme => theme.palette.common.appRedColor }} >
                         <Stack justifyContent={'center'} direction={"row"} marginBottom={"10px"}>
                             <Typography variant="h6"> DO </Typography>
                         </Stack>

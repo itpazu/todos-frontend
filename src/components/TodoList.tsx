@@ -88,7 +88,7 @@ export default function TodoList({ todos, moveToDoes }: {
                         onDragEnter={() => draggedOver.current = idx}
                         onDragEnd={() => handleDragEnd(completed)}
                         onChange={(e) => setShowTitle(!showTitle)}
-                        sx={{ backgroundColor: "#e0e0e0" }}
+                        sx={{ backgroundColor: theme => theme.palette.common.whiteTone }}
 
                     >
 

@@ -9,12 +9,14 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Alert from '@mui/material/Alert'
 import { validate, HELPER_TEXT, fetcher } from '../src/lib/utils';
 import useUser from '../src/components/hooks/useUser';
 
 export default function Login() {
 
     const [input, setInput] = useState({ username: '', password: '' })
+    const [loginError, setLoginError] = useState(null)
     const [showPassword, setShowPassword] = useState(false);
     const { mutateUser } = useUser(
         {
@@ -24,9 +26,9 @@ export default function Login() {
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-    // console.log(error)
     const onInput: React.ChangeEventHandler<HTMLInputElement> =
         ({ currentTarget: { name, value } }) => {
+            setLoginError(null)
             setInput(prev => ({
                 ...prev,
                 [name]: value
@@ -48,10 +50,13 @@ export default function Login() {
             })
             .then(data => {
                 console.log(data)
+                throw new Error(data?.detail || data.message)
                 // mutateUser()
 
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                setLoginError(err.message)
+            })
     }
     return (
         <Box
@@ -65,6 +70,7 @@ export default function Login() {
         >
             <Stack spacing={2} alignItems="center">
                 <Typography variant='h3'> Login </Typography>
+
                 <TextField
                     onChange={onInput}
                     name="username"
@@ -86,7 +92,6 @@ export default function Login() {
                                 <IconButton
                                     aria-label="toggle password visibility"
                                     onClick={handleClickShowPassword}
-                                    // onMouseUp={handleMouseDownPassword}
                                     edge="end"
                                 >
                                     {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -95,6 +100,13 @@ export default function Login() {
                     }}
 
                 />
+                {loginError &&
+                    <Alert severity="error">
+                        <Typography variant='h5'>
+
+                            {loginError}
+                        </Typography>
+                    </Alert>}
                 <Button
                     size="large"
                     variant="contained"
@@ -106,6 +118,7 @@ export default function Login() {
                 >
                     Sign-In
                 </Button>
+
             </Stack>
         </Box>
     )

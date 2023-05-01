@@ -10,13 +10,12 @@ import useUser from '../../src/components/hooks/useUser';
 const initialData = { todos: [], completedTodos: [] }
 
 const TodoMain: NextPageWithLayout = () => {
-    const { user } = useUser({ key: "../api/auth/user", redirectTo: '/' })
-    const { data, isLoading } = useFetchTodos(!!user?.isLoggedIn)
+    useUser({ redirectTo: '/' })
+    const { data, isLoading } = useFetchTodos()
     const { dispatch } = useGlobalContext()
-    console.log('data', data)
-
     useEffect(() => {
         dispatch({ type: "submitChanges", payload: { ...data } })
+        return () => dispatch({ type: "submitChanges", payload: { ...data } })
     }, [data]
     )
 
@@ -32,7 +31,7 @@ const TodoMain: NextPageWithLayout = () => {
 
 TodoMain.getLayout = function getLayout(page: ReactElement) {
     return (
-        <Layout>
+        <Layout >
             {page}
         </Layout>
     )

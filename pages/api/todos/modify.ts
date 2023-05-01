@@ -17,7 +17,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         })
         const data = await response.json()
         if (response.ok) {
-            res.json(data)
+            return res.json(data)
 
         }
         throw new FetchError({

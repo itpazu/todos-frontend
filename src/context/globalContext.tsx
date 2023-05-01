@@ -69,7 +69,6 @@ const globalReducer = (
             }
             return { ...newState }
         case "statusChanges":
-
             return {
                 ...state,
                 fieldsUpdates: {
@@ -80,10 +79,7 @@ const globalReducer = (
                 }
 
             }
-
         case "newTodo":
-
-
             return {
                 ...state, todos: [payload.newItem,
                 ...state.todos],

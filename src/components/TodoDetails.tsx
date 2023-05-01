@@ -130,7 +130,8 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
                     <Button
                         size="medium"
                         sx={{
-                            backgroundColor: editMode ? "#e57373" : "#aed581"
+                            backgroundColor: theme => editMode ? theme.palette.common.appRedColor
+                                : theme.palette.secondary.main
                         }}
                         onClick={() => {
                             editMode && setInput({
@@ -141,7 +142,7 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
                         }}>{editMode ? "discard" : "edit"}</Button>
                 </CardActions>
                 <CardActions>
-                    <Button size="medium" sx={{ backgroundColor: "#aed581" }} disabled={
+                    <Button size="medium" sx={{ backgroundColor: theme => theme.palette.secondary.main }} disabled={
                         !(checkIfChanges() && (isValidTitle && isValidDescription))
                     }
                         onClick={onSubmitChanges}>Submit</Button>

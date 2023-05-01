@@ -32,8 +32,7 @@ async function handler(req: NextApiRequest, res:
 
         res.status((error instanceof FetchError) ? error.response?.status : 500).json({
             message: (error as Error | FetchError).message ?? "server faild",
-            ...(error instanceof FetchError) && error.data,
-            isLoggedIn: false,
+            ...{ completedTodos: [], todos: [] },
         })
     }
 
