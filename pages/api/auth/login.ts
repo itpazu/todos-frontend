@@ -36,11 +36,11 @@ async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
         })
 
     } catch (error) {
-
-        res.json({
-            message: (error as Error | FetchError).message ?? "server faild",
-            ...(error instanceof FetchError) && error.data
-        })
+        res.status(500)
+            .json({
+                message: error instanceof FetchError ? error.message : "server faild",
+                ...(error instanceof FetchError) && error.data
+            })
     }
 }
 

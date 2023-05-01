@@ -2,13 +2,16 @@
 import React, { useState } from "react";
 import { Button, Stack } from "@mui/material";
 import { useGlobalContext, Todo } from "../context/globalContext";
+import SubmitBtnToolTip from './TooltipSubmitBtn';
 import useFetchTodos from './hooks/useTodos';
+import useUser from "./hooks/useUser";
 import Loader from './Loader';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography';
 import axios from "axios";
+
 export default function SubmitChanges({
     areReordered,
 }:
@@ -16,10 +19,11 @@ export default function SubmitChanges({
         areReordered: boolean,
     }) {
     const { state, dispatch } = useGlobalContext()
+    const { user } = useUser();
     const { fieldsUpdates } = state;
     const [storeStatus, setStoreStatus] = useState({ error: false, message: '', showMessage: false })
     const [inProgress, setInprogress] = useState(false)
-    const { data: asFreshTodos, mutate } = useFetchTodos(true)
+    const { data: asFreshTodos, mutate } = useFetchTodos()
 
     const removeTemporaryIds = (changesArr: Array<Partial<Todo>>) => {
         return changesArr.map((item) => {
@@ -30,7 +34,7 @@ export default function SubmitChanges({
             return item
         })
     }
-
+    console.log(user)
     const storeLocalChangesInDb = async () => {
         const body = removeTemporaryIds(Object.values({ ...fieldsUpdates }))
         try {
@@ -128,25 +132,33 @@ export default function SubmitChanges({
                     </Alert>
                 </Box>
             }
+            {user?.isLoggedIn ?
+
+                <Button
+                    sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}
+                    color="secondary"
+                    size="medium"
+                    variant="contained"
+                    onClick={storeLocalChangesInDb}
+                    disabled={
+                        !areReordered && Object.keys(fieldsUpdates).length === 0}>
+                    submit changes
+                </Button>
+                :
+                <SubmitBtnToolTip />
+            }
             <Button
-                sx={{ fontSize: { xs: "0.8rem", md: "1rem" } }}
-                color="secondary"
-                size="medium"
-                variant="contained"
-                onClick={storeLocalChangesInDb}
-                disabled={
-                    !areReordered && Object.keys(fieldsUpdates).length === 0}>
-                submit changes
-            </Button>
-            <Button
-                sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, backgroundColor: "#e57373" }}
+                sx={{
+                    fontSize: { xs: "0.8rem", md: "1rem" },
+                    backgroundColor: theme => theme.palette.common.appRedColor
+                }}
 
                 size="medium"
                 variant="contained"
                 disabled={
                     !areReordered && Object.keys(fieldsUpdates).length === 0
                 }
-                onClick={async () => {
+                onClick={() => {
                     dispatch({
                         type: 'discardLocalChanges', payload: { ...asFreshTodos }
 

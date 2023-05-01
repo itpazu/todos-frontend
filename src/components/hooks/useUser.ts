@@ -5,9 +5,10 @@ import useSWR from 'swr'
 export default function useUser({
     redirectTo = '',
     redirectIfFound = false,
-    key = 'api/auth/user'
 } = {}) {
-    const { data: user, mutate: mutateUser, error } = useSWR(key)
+    const { data: user, mutate: mutateUser, error } = useSWR(`/api/auth/user`)
+    // console.log(user)
+    // console.log(error)
     useEffect(() => {
         // if no redirect needed, just return (example: already on /dashboard)
         // if user data not yet there (fetch in progress, logged in or not) then don't do anything yet

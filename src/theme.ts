@@ -2,7 +2,9 @@ import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
 
 
-
+const buttonHoverColor = "#7da0b0"
+const focusColor = '#14a37f'
+const whiteTone = "#e0e0e0"
 const theme = responsiveFontSizes(createTheme({
   palette: {
     primary: {
@@ -14,10 +16,16 @@ const theme = responsiveFontSizes(createTheme({
     error: {
       main: red.A400,
     },
+    common: {
+      appRedColor: "#e57373",
+      buttonHoverColor,
+      focusColor,
+      whiteTone
+    }
   },
   typography: {
     fontFamily: [
-      'Pro_Sorce_Code', 'Caveat',
+      'Caveat',
 
     ].join(','),
     htmlFontSize: 13
@@ -53,9 +61,22 @@ const theme = responsiveFontSizes(createTheme({
         root: {
           "&:disabled": {
             backgroundColor: "#f0f4c3"
-          }
-        }
+          },
+          "&:hover": {
+            backgroundColor: buttonHoverColor
+          },
 
+        },
+
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          "&:hover": {
+            backgroundColor: buttonHoverColor
+          },
+        }
       }
     },
     MuiInputBase: {
