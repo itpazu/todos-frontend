@@ -29,7 +29,7 @@ async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
             return res.json(user)
         }
         res.status(response?.status)
-        throw new FetchError({
+        throw new FetchError<ErrorData>({
             message: response.statusText,
             data: data as ErrorData,
             response

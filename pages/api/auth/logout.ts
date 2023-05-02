@@ -14,7 +14,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             credentials: `Bearer ${token}`,
         })
 
-        // const data = await response.json()
         if (response.ok) {
             return res.status(200).json({ isLoggedIn: false })
 
