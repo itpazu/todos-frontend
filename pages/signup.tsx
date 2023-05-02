@@ -28,7 +28,6 @@ export default function Login() {
         })
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
-    console.log(signUpError)
     const onInput: React.ChangeEventHandler<HTMLInputElement> =
         ({ currentTarget: { name, value } }) => {
             setSignUpError(null)
