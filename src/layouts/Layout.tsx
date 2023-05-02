@@ -30,7 +30,6 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
     const { user, mutateUser } = useUser()
     const { mutate: mutateTodos } = useTodos()
     const router = useRouter()
-    console.log(router.pathname)
     const redirect = (endpoint: string) => {
         Router.push(endpoint)
     }
@@ -39,7 +38,6 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
         mutateUser(async () => await axios.get('/api/auth/logout'))
         mutateTodos()
     }
-    console.log(/^\/(?!login$|signup$)/.test("/signup"))
     const renderButtonPerPath = () => {
         switch (router.pathname) {
             case "/":
