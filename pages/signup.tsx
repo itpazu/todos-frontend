@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import Link from 'next/link'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
@@ -17,10 +16,11 @@ import Loader from '../src/components/Loader'
 
 export default function Login() {
 
-    const [input, setInput] = useState({ username: '', password: '' })
-    const [loginError, setLoginError] = useState(null)
+    const [input, setInput] = useState({ username: '', password: '', email: '' })
+    const [signUpError, setSignUpError] = useState(null)
     const [showPassword, setShowPassword] = useState(false);
     const [inProcess, setInProcess] = useState(false)
+
     const { mutateUser } = useUser(
         {
             redirectIfFound: true,
@@ -28,10 +28,10 @@ export default function Login() {
         })
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
-
+    console.log(signUpError)
     const onInput: React.ChangeEventHandler<HTMLInputElement> =
         ({ currentTarget: { name, value } }) => {
-            setLoginError(null)
+            setSignUpError(null)
             setInput(prev => ({
                 ...prev,
                 [name]: value
@@ -41,10 +41,10 @@ export default function Login() {
     const onSubmit = () => {
         setInProcess(true)
         fetcher({
-            endpoint: 'api/auth/login',
+            endpoint: 'api/auth/signup',
             host: '',
             method: 'POST',
-            credentials: input
+            body: input
 
         })
             .then(res => {
@@ -62,12 +62,15 @@ export default function Login() {
                     setInProcess(false)
                     return
                 }
-                throw new Error(data?.detail || data.message)
+                const { message, ...rest } = data
+                const errors = Object.values(rest).flat()
+                const logErrors = errors.length > 0 ? `${data.message}:\n - ${errors.join('\n - ')}` : undefined
+                throw new Error(logErrors || data.message)
 
             })
             .catch(err => {
                 setInProcess(false)
-                setLoginError(err.message)
+                setSignUpError(err.message)
             })
     }
     return (
@@ -81,25 +84,10 @@ export default function Login() {
             autoComplete="off"
         >
             <Loader open={inProcess} />
+
             <Stack spacing={2} alignItems="center">
-                <Typography variant='h3'> Login </Typography>
-                <Stack alignItems={'center'}
-                >
-
-                    <Typography variant='h6' sx={{ textAlign: 'center' }} >
-                        if you are not a registered user,
-                    </Typography>
-                    <Typography variant="h6">
-
-                        <Link href="/signup">
-                            sign-up here
-                        </Link> {' '}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                        ...or <em>don't</em> do.
-                    </Typography>
-                </Stack>
-
+                <Typography variant='h3'> Sign Up </Typography>
+                <Typography variant='h5'> ...and get your life organized. </Typography>
 
                 <TextField
                     onChange={onInput}
@@ -108,6 +96,14 @@ export default function Login() {
                     error={!validate("name", input.username)}
                     label="User Name"
                     helperText={validate("name", input.username) ? "" : HELPER_TEXT["userName"]}
+                />
+                <TextField
+                    onChange={onInput}
+                    name="email"
+                    value={input.email}
+                    error={!validate("email", input.email)}
+                    label="Email Address"
+                    helperText={validate("email", input.email) ? "" : HELPER_TEXT["email"]}
                 />
                 <TextField
                     onChange={onInput}
@@ -130,23 +126,25 @@ export default function Login() {
                     }}
 
                 />
-                {loginError &&
+                {signUpError &&
                     <Alert severity="error">
-                        <Typography variant='h5'>
+                        <Typography variant='h6' sx={{ whiteSpace: 'pre-wrap' }}>
 
-                            {loginError}
+                            {signUpError}
                         </Typography>
                     </Alert>}
                 <Button
                     size="large"
                     variant="contained"
                     color='secondary'
-                    disabled={!validate("name", input.username) ||
+                    disabled={!validate("name", input.username) || !validate("email", input.email) ||
                         input.username.length === 0 ||
-                        input.password.length === 0}
+                        input.password.length === 0 ||
+                        input.email.length === 0
+                    }
                     onClick={onSubmit}
                 >
-                    Sign-In
+                    Sign-Up
                 </Button>
 
             </Stack>

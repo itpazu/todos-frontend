@@ -11,8 +11,9 @@ const initialData = { todos: [], completedTodos: [] }
 
 const TodoMain: NextPageWithLayout = () => {
     useUser({ redirectTo: '/' })
-    const { data, isLoading } = useFetchTodos()
+    const { data, isLoading, isValidating } = useFetchTodos()
     const { dispatch } = useGlobalContext()
+
     useEffect(() => {
         dispatch({ type: "submitChanges", payload: { ...data } })
         return () => dispatch({ type: "submitChanges", payload: { ...data } })
@@ -22,7 +23,7 @@ const TodoMain: NextPageWithLayout = () => {
     return (
         <>
 
-            <Todos isLoading={isLoading} data={data ?? initialData} />
+            <Todos isLoading={isLoading || isValidating} data={data ?? initialData} />
 
         </>
 

@@ -1,9 +1,11 @@
-export class FetchError extends Error {
+export type ErrorData = { detail: string }
+type keys = "username" | "password" | "email"
+export type SignUpError = { [k in keys]?: Array<string> }
+
+export class FetchError<Data extends ErrorData | SignUpError> extends Error {
     response: Response
     static state: string = "custom"
-    data: {
-        detail: string
-    }
+    data: Data
     constructor({
         message,
         response,
@@ -11,9 +13,7 @@ export class FetchError extends Error {
     }: {
         message: string
         response: Response
-        data: {
-            detail: string
-        }
+        data: Data
     }) {
         // Pass remaining arguments (including vendor specific ones) to parent constructor
         super(message)
@@ -25,7 +25,7 @@ export class FetchError extends Error {
 
         this.name = 'customError'
         this.response = response
-        this.data = data ?? { detail: message }
+        this.data = data
     }
 }
-export type ErrorData = { detail: string }
+

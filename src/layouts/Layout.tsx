@@ -45,14 +45,17 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
                         >
                             logout
                         </Button> :
+
                         <Button
                             onClick={goToLogin}
                             sx={{ backgroundColor: theme => theme.palette.common.focusColor }}
                             variant="contained"
                             endIcon={<LoginOutlinedIcon />}
                         >
-                            login
-                        </Button>)}
+                            {router.pathname === '/signup' ? 'login' : 'login / signup'}
+                        </Button>
+
+                    )}
 
                 </Grid>
                 <Grid item container xs={12} justifyContent={'center'} >
