@@ -22,7 +22,7 @@ async function handler(req: NextApiRequest, res:
             return res.status(response.status).json(todoStatusDivider(data))
 
         }
-        throw new FetchError({
+        throw new FetchError<ErrorData>({
             message: response.statusText,
             data: data as ErrorData,
             response
@@ -31,7 +31,7 @@ async function handler(req: NextApiRequest, res:
     } catch (error) {
 
         res.status((error instanceof FetchError) ? error.response?.status : 500).json({
-            message: (error as Error | FetchError).message ?? "server faild",
+            message: (error as Error | FetchError<ErrorData>).message ?? "server faild",
             ...{ completedTodos: [], todos: [] },
         })
     }
