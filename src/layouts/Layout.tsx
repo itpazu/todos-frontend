@@ -29,8 +29,8 @@ const PlayGroundToolTip = styled(({ className, ...props }: TooltipProps) => (
 export default function Layout({ children }: { children?: React.ReactElement }) {
     const { user, mutateUser } = useUser()
     const { mutate: mutateTodos } = useTodos()
-
     const router = useRouter()
+    console.log(router.pathname)
     const redirect = (endpoint: string) => {
         Router.push(endpoint)
     }
@@ -39,7 +39,7 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
         mutateUser(async () => await axios.get('/api/auth/logout'))
         mutateTodos()
     }
-    console.log(tooltipClasses.tooltip)
+    console.log(/^\/(?!login$|signup$)/.test("/signup"))
     const renderButtonPerPath = () => {
         switch (router.pathname) {
             case "/":
@@ -154,11 +154,17 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
             spacing={1}
             padding={2}
             columns={{ xs: 12, md: 10 }}
-            sx={theme => ({ minHeight: { xs: '95vh', sm: '100vh' }, backgroundColor: theme.palette.primary.main })}
+            sx={theme => ({ minHeight: { xs: '100vh', sm: '100vh' }, backgroundColor: theme.palette.primary.main })}
             justifyContent={'center'}
 
         >
             <Grid item container minHeight='10vh' xs={12} alignItems={'center'} >
+                {/^\/(?!login$|signup$)/.test(router.pathname) &&
+                    <Grid item container xs={12} justifyContent={'flex-start'}>
+                        <Typography> {user?.isLoggedIn ? `hello ${user.username}!` : 'Playground mode'}
+                        </Typography>
+
+                    </Grid>}
                 <Grid item container xs={12} justifyContent={'flex-end'} >
                     {renderButtonPerPath()}
                 </Grid>
