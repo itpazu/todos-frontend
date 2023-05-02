@@ -25,7 +25,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             })
         }
 
-        throw new FetchError({
+        throw new FetchError<ErrorData>({
             message: response.statusText,
             data: data as ErrorData,
             response
@@ -33,7 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     } catch (error) {
         res.json({
-            message: (error as Error | FetchError).message ?? "server faild",
+            message: (error as Error | FetchError<ErrorData>).message ?? "server faild",
             ...(error instanceof FetchError) && error.data,
             isLoggedIn: false,
         })

@@ -36,7 +36,7 @@ async function Signup(req: NextApiRequest, res: NextApiResponse) {
             return res.json(user)
         }
         res.status(response?.status)
-        throw new FetchError({
+        throw new FetchError<SignUpError>({
             message: response.statusText,
             data: data as SignUpError,
             response
