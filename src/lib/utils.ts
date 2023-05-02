@@ -1,7 +1,7 @@
 import { Todo } from '../context/globalContext'
 
-// const SERVER_URL_PRODUCTION = process.env.NEXT_PUBLIC_SERVER_URL
-const SERVER_URL_PRODUCTION = 'http://localhost:8000/'
+const SERVER_URL_PRODUCTION = process.env.NEXT_PUBLIC_SERVER_URL
+// const SERVER_URL_PRODUCTION = 'http://localhost:8000/'
 
 type BasicHeadersArgs = { username: string, password: string }
 
@@ -25,7 +25,7 @@ type FetcherArgs = {
     method?: string
     body?: {}
     host?: string
-    credentials: BasicHeadersArgs | string
+    credentials?: BasicHeadersArgs | string
 }
 export const fetcher = ({
     endpoint,
@@ -33,7 +33,13 @@ export const fetcher = ({
     host = SERVER_URL_PRODUCTION,
     credentials,
     method = "GET" }: FetcherArgs) => {
-    const headers = typeof credentials === 'object' ? createBasicAuthHeaders(credentials) : createTokenHeader(credentials)
+    let headers;
+    if (credentials) {
+
+        headers = typeof credentials === 'object' ? createBasicAuthHeaders(credentials) : createTokenHeader(credentials)
+    } else {
+        headers = { 'Content-Type': 'application/json' }
+    }
     return fetch(`${host}` + `${endpoint}`, {
         method,
         headers,
@@ -71,7 +77,7 @@ export const formatDate = (date: string): string => {
 export const validate = (type: string, input: string) => {
     switch (type) {
         case "email":
-            return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(input)
+            return input.length === 0 || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(input)
         case "name":
             return /^[a-z|A-Z|\s]*$/.test(input)
         case "title":
@@ -89,7 +95,8 @@ export const validate = (type: string, input: string) => {
 export const HELPER_TEXT: { [key: string]: string } = {
     title: 'at least 2 character long, must contain character/numbers',
     description: 'please insert a description of at least 10 letters long',
-    userName: "invalid user name. must contain only letters"
+    userName: "invalid user name. must contain only letters",
+    email: "please provide a valid email address"
 
 }
 

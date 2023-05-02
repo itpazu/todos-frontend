@@ -6,7 +6,7 @@ import useUser from '../hooks/useUser'
 export default function useFetchTodos() {
     const { user } = useUser()
 
-    const { data, error, isLoading, mutate } = useSWR<TodosFromProps>(
+    const { data, error, isLoading, mutate, isValidating } = useSWR<TodosFromProps>(
         !!user?.isLoggedIn ? `/api/todos` : null,
     )
     useEffect(() => {
@@ -22,6 +22,7 @@ export default function useFetchTodos() {
     return {
         data,
         isLoading,
+        isValidating,
         error,
         mutate
     }

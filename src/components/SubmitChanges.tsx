@@ -34,7 +34,6 @@ export default function SubmitChanges({
             return item
         })
     }
-    console.log(user)
     const storeLocalChangesInDb = async () => {
         const body = removeTemporaryIds(Object.values({ ...fieldsUpdates }))
         try {
