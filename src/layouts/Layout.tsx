@@ -64,7 +64,7 @@ export default function Layout({ children }: { children?: React.ReactElement }) 
                 </Grid>
                 <Grid item container xs={12} justifyContent={'center'} >
                     <Typography
-                        variant='body1'> Youve got to do what youve got to do. </Typography>
+                        variant='body1'> You've got to do what you've got to do. </Typography>
                 </Grid>
             </Grid>
             {children}

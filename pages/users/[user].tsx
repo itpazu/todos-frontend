@@ -17,7 +17,7 @@ const TodoMain: NextPageWithLayout = () => {
     useEffect(() => {
         dispatch({ type: "submitChanges", payload: { ...data } })
         return () => dispatch({ type: "submitChanges", payload: { ...data } })
-    }, [data]
+    }, [data, dispatch]
     )
 
     return (

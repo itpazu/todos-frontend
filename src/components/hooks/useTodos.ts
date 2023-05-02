@@ -17,7 +17,7 @@ export default function useFetchTodos() {
             mutate()
         }
 
-    }, [user?.isLoggedIn])
+    }, [user?.isLoggedIn, error, mutate])
 
     return {
         data,
