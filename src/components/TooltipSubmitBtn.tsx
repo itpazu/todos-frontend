@@ -34,6 +34,10 @@ export default function SubmitBtnToolTip() {
                         <Link href={'/login'}>
                             Login
                         </Link> {' '}
+                        or {' '}
+                        <Link href={'/signup'}>
+                            signup
+                        </Link> {' '}
                         to store and retrieve your personal todos
                     </Typography>
 

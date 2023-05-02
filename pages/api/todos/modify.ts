@@ -1,6 +1,5 @@
 import { NextApiResponse, NextApiRequest } from 'next'
 import { fetcher } from '../../../src/lib/utils';
-import { TodosFromProps } from '../../../src/context/globalContext';
 import { FetchError, ErrorData } from '../../../src/lib/fetchError';
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { sessionOptions } from '../../../src/lib/session'
