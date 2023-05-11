@@ -8,6 +8,8 @@ import TodoList from './TodoList';
 import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
 import { TodosFromProps, MovToDoesHandler, Todo, useGlobalContext } from '../context/globalContext';
+import { useAppDispatch } from 'src/store/reduxHooks';
+import { toggleComplete } from 'src/store/todosSlice';
 
 export default function Todos({ data, isLoading = false }:
     {
@@ -16,11 +18,12 @@ export default function Todos({ data, isLoading = false }:
     }
 ) {
     const { dispatch, state } = useGlobalContext()
+    const reduxDispatch = useAppDispatch()
     const { todos, completedTodos } = state;
 
     // cache of the original state - completed / pending per todo in the database
-    const originalState = useMemo(() => {
-        return [...data.todos, ...data.completedTodos].reduce<Map<number, boolean>>((prevMap, current) => {
+    const originalState: Map<number, boolean> = useMemo(() => {
+        return [...data.todos, ...data.completedTodos].reduce((prevMap, current) => {
             return prevMap.set(current.id, current.completed)
         }, new Map)
     }, [data])
@@ -38,7 +41,7 @@ export default function Todos({ data, isLoading = false }:
         return reorderedTodos || reorderedCompletedTodos
 
     }
-
+    // remove when migrating to redux
     const updateStatusIfChanged = (id: number, newStatus: boolean) => {
         let dispatchPayload;
         if ((originalState.get(id) === newStatus)) {
@@ -67,6 +70,7 @@ export default function Todos({ data, isLoading = false }:
     }
     const moveTodoHandler: MovToDoesHandler = (moveFromArr, moveToArr, idx) => {
         const constTodoToEdit = { ...state[moveFromArr][idx] }
+        console.log(state)
         constTodoToEdit.completed = !constTodoToEdit.completed
         const { completed, id } = constTodoToEdit;
         updateStatusIfChanged(id, completed)
@@ -75,13 +79,23 @@ export default function Todos({ data, isLoading = false }:
 
         let moveToArrCopy = [...state[moveToArr]]
         moveToArrCopy.splice(0, 0, constTodoToEdit)
+        //redux-migration
+        reduxDispatch(toggleComplete({
+            idx,
+            moveFrom: moveFromArr,
+            moveTo: moveToArr,
+            id,
+            completed,
+            originalStatus: originalState.get(id)
 
+        }))
         return dispatch({
             type: "both", payload: {
                 [moveToArr]: moveToArrCopy,
                 [moveFromArr]: moveFromArrCopy
             }
         })
+
     }
 
     const todosDropHandler = (

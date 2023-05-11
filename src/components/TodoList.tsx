@@ -9,6 +9,8 @@ import TodoDetails from './TodoDetails';
 import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button';
+import { useAppDispatch } from 'src/store/reduxHooks';
+import { deleteTodo } from 'src/store/todosSlice';
 
 export default function TodoList({ todos, moveToDoes }: {
     todos: TodoProp[],
@@ -22,6 +24,7 @@ export default function TodoList({ todos, moveToDoes }: {
 
     const [showTitle, setShowTitle] = useState(true)
     const { state, dispatch } = useGlobalContext()
+    const reduxDispatch = useAppDispatch()
     const handleDragEnd = (completed: boolean) => {
         const todosType = completed ? "completedTodos" : "todos"
         const todosCopy = [...state[todosType]]
@@ -72,6 +75,8 @@ export default function TodoList({ todos, moveToDoes }: {
                 }
             }
         })
+        reduxDispatch(
+            deleteTodo({ todoList: currentList, id: deletedId, idx }))
 
     }
     return (

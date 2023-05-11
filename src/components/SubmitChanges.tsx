@@ -11,6 +11,8 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography';
 import axios from "axios";
+import { useAppDispatch } from 'src/store/reduxHooks';
+import { todos } from 'src/store/todosSlice';
 
 export default function SubmitChanges({
     areReordered,
@@ -20,6 +22,7 @@ export default function SubmitChanges({
     }) {
     const { state, dispatch } = useGlobalContext()
     const { user } = useUser();
+    const reduxDispatch = useAppDispatch()
     const { fieldsUpdates } = state;
     const [storeStatus, setStoreStatus] = useState({ error: false, message: '', showMessage: false })
     const [inProgress, setInprogress] = useState(false)
@@ -48,6 +51,11 @@ export default function SubmitChanges({
                 const res = await mutate()
 
                 dispatch({ type: "submitChanges", payload: { ...res } })
+                //redux migration
+                if (res) {
+
+                    reduxDispatch(todos(res))
+                }
 
 
             } else {
@@ -161,7 +169,13 @@ export default function SubmitChanges({
                     dispatch({
                         type: 'discardLocalChanges', payload: { ...asFreshTodos }
 
+
                     })
+                    if (asFreshTodos) {
+
+                        reduxDispatch(todos(asFreshTodos))
+                    }
+
                 }}
             >
                 discard changes

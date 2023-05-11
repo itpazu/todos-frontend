@@ -9,10 +9,13 @@ import TextField from '@mui/material/TextField';
 import { Todo, State, useGlobalContext, FieldsChanges } from '../context/globalContext';
 import { formatDate } from '../lib/utils';
 import { validate, HELPER_TEXT } from '../lib/utils';
+import { useAppDispatch } from 'src/store/reduxHooks';
+import { editTodo as editTodo } from '../store/todosSlice';
 
 export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) {
     const { title, description, completed, id, created_at, updated_at } = todo
     const { dispatch, state } = useGlobalContext()
+    const reduxDispatch = useAppDispatch()
     const [editMode, setEditMode] = useState(false)
     const [input, setInput] = useState({
         title,
@@ -45,7 +48,7 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
     }
     const isValidTitle = validate("title", input.title)
     const isValidDescription = validate("description", input.description)
-
+    console.log(state)
     const onSubmitChanges = () => {
         const todosArrKey: keyof State = completed ? "completedTodos" : "todos"
         const todosArr = [...state[todosArrKey]]
@@ -63,7 +66,10 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
                 todoId: id
             }
 
-        })
+        }),
+            // redux migration
+            reduxDispatch(editTodo({ todosList: todosArrKey, id, input }))
+
         setEditMode(!editMode)
 
     }
