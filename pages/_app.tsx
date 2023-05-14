@@ -9,13 +9,11 @@ import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import type { NextPage } from 'next'
 import { SWRConfig } from 'swr';
-import { GlobalContextProvider } from '../src/context/globalContext';
 import store from '../src/store/store';
 import axios from 'axios';
 const initialData = { todos: [], completedTodos: [] }
 
 const clientSideEmotionCache = createEmotionCache();
-
 
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
@@ -59,13 +57,11 @@ export default function MyApp(props: AppPropsWithLayout) {
           }
         }}>
 
-          <GlobalContextProvider >
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
 
-              {getLayout(<Component {...pageProps} />)}
-            </ThemeProvider>
-          </GlobalContextProvider>
+            {getLayout(<Component {...pageProps} />)}
+          </ThemeProvider>
         </SWRConfig>
       </Provider>
 

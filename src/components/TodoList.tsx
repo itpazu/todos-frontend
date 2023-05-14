@@ -4,13 +4,13 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Todo as TodoProp, useGlobalContext, MovToDoesHandler } from '../context/globalContext';
+import { Todo as TodoProp, MovToDoesHandler } from '../context/globalContext';
 import TodoDetails from './TodoDetails';
 import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button';
-import { useAppDispatch } from 'src/store/reduxHooks';
-import { deleteTodo } from 'src/store/todosSlice';
+import { useAppDispatch, useAppSelector } from 'src/store/reduxHooks';
+import { deleteTodo, reorderTodos } from 'src/store/todosSlice';
 
 export default function TodoList({ todos, moveToDoes }: {
     todos: TodoProp[],
@@ -18,19 +18,19 @@ export default function TodoList({ todos, moveToDoes }: {
 
 }) {
 
-
     let draggedItemIdx = useRef<number | null>(null)
     let draggedOver = useRef<number | null>(null)
 
     const [showTitle, setShowTitle] = useState(true)
-    const { state, dispatch } = useGlobalContext()
+    const state = useAppSelector(state => state.todos)
     const reduxDispatch = useAppDispatch()
     const handleDragEnd = (completed: boolean) => {
-        const todosType = completed ? "completedTodos" : "todos"
-        const todosCopy = [...state[todosType]]
-        const removed = todosCopy.splice(draggedItemIdx.current as number, 1)
-        todosCopy.splice(draggedOver.current as number, 0, removed[0])
-        dispatch({ type: todosType, payload: { todos: todosCopy } })
+        reduxDispatch(reorderTodos({
+            todosList: completed ? "completedTodos" : "todos",
+            fromPosition: draggedItemIdx.current as number,
+            toPosition: draggedOver.current as number
+        }))
+
     }
 
 
@@ -51,32 +51,9 @@ export default function TodoList({ todos, moveToDoes }: {
 
 
 
-    const handleDelete = (completed: boolean, idx: number) => {
-        const currentList = completed ? "completedTodos" : "todos"
-        const localListCopy = [...state[currentList]]
-        let deleted = localListCopy.splice(idx, 1)
-        const deletedId = deleted[0].id
-        let type = "deleteNewTodo"
-        let payloadData: { id: number, description?: string } = {
-            id: deletedId,
-        }
-        if (deletedId > 0) {
-            type = "deleteTodo"
-            payloadData = { ...payloadData, description: "delete" }
-        }
-
-        dispatch({
-            type, payload: {
-                filteredTodos: {
-                    [currentList]: localListCopy
-                },
-                deleted: {
-                    ...payloadData
-                }
-            }
-        })
+    const handleDelete = (completed: boolean, idx: number, id: number) => {
         reduxDispatch(
-            deleteTodo({ todoList: currentList, id: deletedId, idx }))
+            deleteTodo({ todoList: completed ? "completedTodos" : "todos", id, idx }))
 
     }
     return (
@@ -120,7 +97,7 @@ export default function TodoList({ todos, moveToDoes }: {
                                 <Button
 
                                     variant="text" color="error"
-                                    onClick={() => handleDelete(completed, idx)}>delete</Button>
+                                    onClick={() => handleDelete(completed, idx, id)}>delete</Button>
 
 
                             </Stack>

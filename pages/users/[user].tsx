@@ -4,7 +4,6 @@ import Todos from 'src/components/Todos';
 import Layout from 'src/layouts/Layout';
 import type { NextPageWithLayout } from '../_app'
 import useFetchTodos from 'src/components/hooks/useTodos'
-import { useGlobalContext } from 'src/context/globalContext';
 import useUser from 'src/components/hooks/useUser';
 import { useAppDispatch } from 'src/store/reduxHooks';
 import { todos } from 'src/store/todosSlice';
@@ -15,16 +14,13 @@ const TodoMain: NextPageWithLayout = () => {
     useUser({ redirectTo: '/' })
     const reduxDispatch = useAppDispatch()
     const { data, isLoading, isValidating } = useFetchTodos()
-    const { dispatch } = useGlobalContext()
 
     useEffect(() => {
         if (data) {
-            dispatch({ type: "submitChanges", payload: { ...data } })
-            // redux migration
             reduxDispatch(todos(data))
         }
-        // return () => dispatch({ type: "submitChanges", payload: { ...data } })
-    }, [data, dispatch]
+        return () => { reduxDispatch(todos(initialData)) }
+    }, [data, reduxDispatch]
     )
 
     return (

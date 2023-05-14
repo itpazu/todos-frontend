@@ -4,7 +4,7 @@ import fieldUpdatedReducer from './fieldUpdates'
 const store = configureStore({
     reducer: {
         todos: todosReducer,
-        fields: fieldUpdatedReducer
+        fieldsChanges: fieldUpdatedReducer
     }
 })
 

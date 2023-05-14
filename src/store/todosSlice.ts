@@ -22,12 +22,25 @@ const todosSlice = createSlice(
         initialState,
         reducers: {
             todos: (state, action: PayloadAction<{
-                completedTodos: Todo[]
-                todos: Todo[]
+                completedTodos?: Todo[]
+                todos?: Todo[]
             }>) => {
-                const { payload: { todos, completedTodos } } = action
+                const { payload: { todos = [], completedTodos = [] } } = action
                 state.todos = todos
                 state.completedTodos = completedTodos
+            },
+            reorderTodos: (state, action: PayloadAction<{
+                todosList: TodosListName
+                fromPosition: number
+                toPosition: number
+            }>) => {
+                const { payload: {
+                    todosList,
+                    fromPosition,
+                    toPosition
+                } } = action
+                const reorderedTodo = state[todosList].splice(fromPosition, 1)[0]
+                state[todosList].splice(toPosition, 0, reorderedTodo)
             },
             newTodo: (state, action: PayloadAction<{
                 newItem: Todo, fieldsUpdates: Omit<Todo, 'id'>, id: number
@@ -68,5 +81,5 @@ const todosSlice = createSlice(
         }
     }
 )
-export const { newTodo, editTodo, toggleComplete, todos, deleteTodo } = todosSlice.actions
+export const { newTodo, editTodo, toggleComplete, todos, deleteTodo, reorderTodos } = todosSlice.actions
 export default todosSlice.reducer
