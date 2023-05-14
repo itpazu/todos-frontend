@@ -1,4 +1,5 @@
 import React, { ReactNode, ReactElement } from 'react';
+import { Provider } from 'react-redux'
 import Head from 'next/head';
 import { AppProps } from 'next/app';
 import { ThemeProvider } from '@mui/material/styles';
@@ -6,15 +7,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
-import Layout from '../src/layouts/Layout';
 import type { NextPage } from 'next'
 import { SWRConfig } from 'swr';
-import { GlobalContextProvider } from '../src/context/globalContext';
-import axios from 'axios'
+import store from '../src/store/store';
+import axios from 'axios';
 const initialData = { todos: [], completedTodos: [] }
 
 const clientSideEmotionCache = createEmotionCache();
-
 
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
@@ -44,7 +43,7 @@ export default function MyApp(props: AppPropsWithLayout) {
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <ThemeProvider theme={theme}>
+      <Provider store={store}>
         <SWRConfig value={{
           fallback: initialData,
           // refreshInterval: 10000,
@@ -57,15 +56,16 @@ export default function MyApp(props: AppPropsWithLayout) {
             setTimeout(() => revalidate({ retryCount }), 5000)
           }
         }}>
-          <GlobalContextProvider >
 
+          <ThemeProvider theme={theme}>
             <CssBaseline />
 
             {getLayout(<Component {...pageProps} />)}
-          </GlobalContextProvider>
+          </ThemeProvider>
         </SWRConfig>
+      </Provider>
 
-      </ThemeProvider>
+
     </CacheProvider>
   );
 }

@@ -52,14 +52,14 @@ export const fetcher = ({
 
 const filterFunc = (todoArr: Todo[], criteria: boolean) => todoArr.filter(({ completed }) => completed === criteria)
 
-const sortFunc = ({ order = 0 }, { order: orderB = 0 }) => order - orderB
+// const sortFunc = ({ order = 0 }, { order: orderB = 0 }) => order - orderB
 
 export const todoStatusDivider = (todos: Todo[]) => {
     let pending = filterFunc(todos, false)
     let completed = filterFunc(todos, true)
     const res = {
-        completedTodos: completed.length > 0 ? completed.sort(sortFunc) : [],
-        todos: pending.length > 0 ? pending.sort(sortFunc) : []
+        completedTodos: completed.length > 0 ? completed : [],
+        todos: pending.length > 0 ? pending : []
     }
     return res
 }

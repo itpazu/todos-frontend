@@ -6,13 +6,16 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { Todo, State, useGlobalContext, FieldsChanges } from '../context/globalContext';
+import { Todo } from '../context/globalContext';
 import { formatDate } from '../lib/utils';
 import { validate, HELPER_TEXT } from '../lib/utils';
+import { useAppDispatch, useAppSelector } from 'src/store/reduxHooks';
+import { editTodo as editTodo } from '../store/todosSlice';
 
 export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) {
     const { title, description, completed, id, created_at, updated_at } = todo
-    const { dispatch, state } = useGlobalContext()
+    const state = useAppSelector(state => state.todos)
+    const reduxDispatch = useAppDispatch()
     const [editMode, setEditMode] = useState(false)
     const [input, setInput] = useState({
         title,
@@ -47,23 +50,7 @@ export default function TodoDetails({ todo, idx }: { todo: Todo, idx: number }) 
     const isValidDescription = validate("description", input.description)
 
     const onSubmitChanges = () => {
-        const todosArrKey: keyof State = completed ? "completedTodos" : "todos"
-        const todosArr = [...state[todosArrKey]]
-        const editedTodo = { ...todo, ...input }
-        todosArr.splice(idx, 1, editedTodo)
-        const fieldChanges: FieldsChanges = { ...input, id }
-        if (!monitorChangesTitle()) delete fieldChanges.title
-        if (!monitorChangesDescription()) delete fieldChanges.description
-
-        dispatch({
-            type: "editTodo",
-            payload: {
-                changedTodoList: { [todosArrKey]: todosArr },
-                fieldsUpdates: fieldChanges,
-                todoId: id
-            }
-
-        })
+        reduxDispatch(editTodo({ todosList: completed ? "completedTodos" : "todos", id, input }))
         setEditMode(!editMode)
 
     }

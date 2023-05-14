@@ -5,31 +5,31 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
 import { Todo } from '../context/globalContext';
-import { useGlobalContext } from '../context/globalContext';
 import { validate, HELPER_TEXT } from '../lib/utils';
-
+import { useAppDispatch } from 'src/store/reduxHooks';
+import { newTodo as newTodoAction } from '../store/todosSlice';
 
 const newTodoModel: Todo = {
     title: "",
     description: "",
     id: 0,
     completed: false,
-    order: 0
 }
 
 export default function AddToDo() {
 
-    const { dispatch } = useGlobalContext()
+    const reduxDispatch = useAppDispatch()
     const [newTodo, setNewTodo] = useState<Todo>(newTodoModel)
+
     const submitNewTodo = () => {
         const newTodoCopy = { ...newTodo }
         const { id, ...rest } = newTodoCopy
-        dispatch({
-            type: "newTodo", payload: {
-                newItem: newTodoCopy,
-                fieldsUpdates: { [newTodoCopy.id]: rest }
-            }
-        })
+
+        reduxDispatch(newTodoAction({
+            newItem: newTodoCopy,
+            fieldsUpdates: rest,
+            id
+        }))
 
         // setting temporaryIds (from 0 to negative to keep them unique) as ids are
         //used in the logic of local changes tracking

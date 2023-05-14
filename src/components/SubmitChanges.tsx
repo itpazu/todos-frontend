@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button, Stack } from "@mui/material";
-import { useGlobalContext, Todo } from "../context/globalContext";
+import { Todo } from "../context/globalContext";
 import SubmitBtnToolTip from './TooltipSubmitBtn';
 import useFetchTodos from './hooks/useTodos';
 import useUser from "./hooks/useUser";
@@ -11,6 +11,8 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography';
 import axios from "axios";
+import { useAppDispatch, useAppSelector } from 'src/store/reduxHooks';
+import { todos } from 'src/store/todosSlice';
 
 export default function SubmitChanges({
     areReordered,
@@ -18,8 +20,9 @@ export default function SubmitChanges({
     {
         areReordered: boolean,
     }) {
-    const { state, dispatch } = useGlobalContext()
     const { user } = useUser();
+    const state = useAppSelector(state => state.fieldsChanges)
+    const reduxDispatch = useAppDispatch()
     const { fieldsUpdates } = state;
     const [storeStatus, setStoreStatus] = useState({ error: false, message: '', showMessage: false })
     const [inProgress, setInprogress] = useState(false)
@@ -27,11 +30,12 @@ export default function SubmitChanges({
 
     const removeTemporaryIds = (changesArr: Array<Partial<Todo>>) => {
         return changesArr.map((item) => {
-            const fallbackId = item?.id ?? -1
+            const itemCopy = { ...item } // creating a copy as id cannot be deleted in place
+            const fallbackId = itemCopy?.id ?? 1
             if (fallbackId <= 0) {
-                delete item.id
+                delete itemCopy.id
             }
-            return item
+            return itemCopy
         })
     }
     const storeLocalChangesInDb = async () => {
@@ -47,8 +51,9 @@ export default function SubmitChanges({
                 }))
                 const res = await mutate()
 
-                dispatch({ type: "submitChanges", payload: { ...res } })
-
+                if (res) {
+                    reduxDispatch(todos(res))
+                }
 
             } else {
                 const errorMessage = `changes were not stored,
@@ -158,10 +163,9 @@ export default function SubmitChanges({
                     !areReordered && Object.keys(fieldsUpdates).length === 0
                 }
                 onClick={() => {
-                    dispatch({
-                        type: 'discardLocalChanges', payload: { ...asFreshTodos }
 
-                    })
+                    reduxDispatch(todos(asFreshTodos ?? {}))
+
                 }}
             >
                 discard changes

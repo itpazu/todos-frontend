@@ -7,7 +7,9 @@ import Paper from '@mui/material/Paper';
 import TodoList from './TodoList';
 import AddToDo from './AddToDo';
 import SubmitChanges from './SubmitChanges';
-import { TodosFromProps, MovToDoesHandler, Todo, useGlobalContext } from '../context/globalContext';
+import { TodosFromProps, MovToDoesHandler, Todo } from '../context/globalContext';
+import { useAppDispatch, useAppSelector } from 'src/store/reduxHooks';
+import { toggleComplete } from 'src/store/todosSlice';
 
 export default function Todos({ data, isLoading = false }:
     {
@@ -15,12 +17,13 @@ export default function Todos({ data, isLoading = false }:
         isLoading?: boolean
     }
 ) {
-    const { dispatch, state } = useGlobalContext()
+    const reduxDispatch = useAppDispatch()
+    const state = useAppSelector(state => state.todos)
     const { todos, completedTodos } = state;
 
     // cache of the original state - completed / pending per todo in the database
-    const originalState = useMemo(() => {
-        return [...data.todos, ...data.completedTodos].reduce<Map<number, boolean>>((prevMap, current) => {
+    const originalState: Map<number, boolean> = useMemo(() => {
+        return [...data.todos, ...data.completedTodos].reduce((prevMap, current) => {
             return prevMap.set(current.id, current.completed)
         }, new Map)
     }, [data])
@@ -39,49 +42,22 @@ export default function Todos({ data, isLoading = false }:
 
     }
 
-    const updateStatusIfChanged = (id: number, newStatus: boolean) => {
-        let dispatchPayload;
-        if ((originalState.get(id) === newStatus)) {
-            dispatchPayload = {
-                type: "removeStatusChange", payload: {
-                    id
-                }
-            }
-        } else {
-            dispatchPayload = {
-                type: "statusChanges",
-                payload: {
-                    id,
-                    fieldsUpdates: {
-                        [id]: {
-                            id,
-                            completed: newStatus,
-                        }
-
-                    }
-                }
-
-            }
-        }
-        dispatch(dispatchPayload)
-    }
     const moveTodoHandler: MovToDoesHandler = (moveFromArr, moveToArr, idx) => {
         const constTodoToEdit = { ...state[moveFromArr][idx] }
+        console.log(state)
         constTodoToEdit.completed = !constTodoToEdit.completed
         const { completed, id } = constTodoToEdit;
-        updateStatusIfChanged(id, completed)
-        let moveFromArrCopy = [...state[moveFromArr]]
-        moveFromArrCopy.splice(idx, 1)
 
-        let moveToArrCopy = [...state[moveToArr]]
-        moveToArrCopy.splice(0, 0, constTodoToEdit)
+        reduxDispatch(toggleComplete({
+            idx,
+            moveFrom: moveFromArr,
+            moveTo: moveToArr,
+            id,
+            completed,
+            originalStatus: originalState.get(id)
 
-        return dispatch({
-            type: "both", payload: {
-                [moveToArr]: moveToArrCopy,
-                [moveFromArr]: moveFromArrCopy
-            }
-        })
+        }))
+
     }
 
     const todosDropHandler = (
