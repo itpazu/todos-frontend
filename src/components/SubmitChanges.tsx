@@ -47,7 +47,7 @@ export default function SubmitChanges({
             if (response.status === 200) {
                 setStoreStatus(prev => ({
                     ...prev,
-                    message: "successfully stored your changes!", showMessage: true
+                    message: "successfully stored your changes!", showMessage: true, error: false
                 }))
                 const res = await mutate()
 
